@@ -257,6 +257,7 @@ public class ChartController {
         ThrowUtils.throwIf(StringUtils.isBlank(goal),ErrorCode.PARAMS_ERROR,"目标为空");
         ThrowUtils.throwIf(StringUtils.isNotBlank(chartName) && chartName.length() >100 ,ErrorCode.PARAMS_ERROR,"名称过长");
 
+        User loginUser = userService.getLoginUser(request);
 //        final String prompt ="你是一个数据分析师和前端开发专家，接下来我会按照以下固定格式给你提供内容:\n" +
 //                "分析需求:\n" +
 //                "{数据分析的需求或者目标}\n" +
@@ -278,7 +279,11 @@ public class ChartController {
         // 构造用户输入
         StringBuilder userInput = new StringBuilder();
         userInput.append("分析需求：").append("\n");
-        userInput.append(goal).append("\n");
+        String userGoal = goal;
+        if (StringUtils.isNotBlank(chartType)){
+            userGoal = userGoal + ".请使用" + chartType;
+        }
+        userInput.append(userGoal).append("\n");
         userInput.append("原始数据：").append("\n");
         // 压缩数据
         String result = ExcelUtils.excelToCsv(multipartFile);
@@ -289,11 +294,25 @@ public class ChartController {
         if (splits.length <3){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,"AI响应错误");
         }
-        String genChart = splits[1];
-        String genResult = splits[2];
+        String genChart = splits[1].trim();
+        String genResult = splits[2].trim();
+
+        // to db
+        Chart chart =new Chart();
+        chart.setGoal(userGoal);
+        chart.setChartName(chartName);
+        chart.setChartData(result);
+        chart.setChartType(chartType);
+        chart.setGenChart(genChart);
+        chart.setGenResult(genChart);
+        chart.setUserId(loginUser.getId());
+        boolean saveResult = chartService.save(chart);
+        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败！");
+
         BiResponse biResponse = new BiResponse();
         biResponse.setGenChart(genChart);
         biResponse.setGenResult(genResult);
+        biResponse.setChartId(chart.getId());
 
         return ResultUtils.success(biResponse);
     }
