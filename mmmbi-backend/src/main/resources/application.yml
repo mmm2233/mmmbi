@@ -50,6 +50,10 @@ server:
     session:
       cookie:
         max-age: 2592000
+yuapi:
+  client:
+    access-key: tdbzdtvtzjhijwcjayu89oon5sqdynwi
+    secret-key: 4e6fqvltevhx6vnwsb922k9t4jzc7qdg
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false

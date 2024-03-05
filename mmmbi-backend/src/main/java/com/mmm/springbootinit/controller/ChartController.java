@@ -10,11 +10,13 @@ import com.mmm.springbootinit.common.ResultUtils;
 import com.mmm.springbootinit.constant.UserConstant;
 import com.mmm.springbootinit.exception.BusinessException;
 import com.mmm.springbootinit.exception.ThrowUtils;
+import com.mmm.springbootinit.manager.AIManager;
 import com.mmm.springbootinit.manager.CosManager;
 import com.mmm.springbootinit.model.dto.chart.*;
 import com.mmm.springbootinit.model.entity.Chart;
 import com.mmm.springbootinit.model.entity.User;
 import com.mmm.springbootinit.model.enums.FileUploadBizEnum;
+import com.mmm.springbootinit.model.vo.BiResponse;
 import com.mmm.springbootinit.model.vo.ChartVO;
 import com.mmm.springbootinit.service.ChartService;
 import com.mmm.springbootinit.service.UserService;
@@ -22,10 +24,10 @@ import com.mmm.springbootinit.utils.ExcelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.Arrays;
@@ -40,16 +42,20 @@ import java.util.Arrays;
 @RequestMapping("/chart")
 @Slf4j
 public class ChartController {
-    @javax.annotation.Resource
-    //@Resource
+
+    private static final Long modeId = 1661220670853435394L;
+
+    @Resource
     private CosManager cosManager;
 
-    @javax.annotation.Resource
-    //@Resource
+    @Resource
     private ChartService chartService;
-    @javax.annotation.Resource
-    //@Resource
+
+    @Resource
     private UserService userService;
+
+    @Resource
+    private AIManager aiManager;
 
     // region 增删改查
 
@@ -241,7 +247,7 @@ public class ChartController {
      * @return
      */
     @PostMapping("/gen")
-    public BaseResponse<String> getChartByAI(@RequestPart("file") MultipartFile multipartFile,
+    public BaseResponse<BiResponse> getChartByAI(@RequestPart("file") MultipartFile multipartFile,
                                              GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
         String goal = genCharByAIRequest.getGoal();
         String chartName = genCharByAIRequest.getChartName();
@@ -251,54 +257,44 @@ public class ChartController {
         ThrowUtils.throwIf(StringUtils.isBlank(goal),ErrorCode.PARAMS_ERROR,"目标为空");
         ThrowUtils.throwIf(StringUtils.isNotBlank(chartName) && chartName.length() >100 ,ErrorCode.PARAMS_ERROR,"名称过长");
 
-        // 用户输入
+//        final String prompt ="你是一个数据分析师和前端开发专家，接下来我会按照以下固定格式给你提供内容:\n" +
+//                "分析需求:\n" +
+//                "{数据分析的需求或者目标}\n" +
+//                "原始数据:\n" +
+//                "{csv格式的原始数据, 用,作为分隔符}\n" +
+//                "请根据这两部分内容, 帮我按照以下格式生成内容（此外不要生成任何多余的开头、结尾、注释等内容）\n" +
+//                "【【【【\n" +
+//                "{前端Echarts V5的option配置对象js代码，合理地将数据进行可视化,不要生成注释和图表标题}\n" +
+//                "【【【【\n" +
+//                "{明确的数据分析结论、越详细越好，不要生成多余的注释}";
+
+        //分析需求:
+        //分析网站用户的增长情况
+        //原始数据:
+        //日期，用户数
+        //1号,10
+        //2号,20
+        //3号,30
+        // 构造用户输入
         StringBuilder userInput = new StringBuilder();
-        userInput.append("你是一个数据分析师，记下来我会给你分析目标和原始数据，请告诉我分析结论。").append("\n");
-        userInput.append("分析目标：").append(goal).append("\n");
+        userInput.append("分析需求：").append("\n");
+        userInput.append(goal).append("\n");
+        userInput.append("原始数据：").append("\n");
         // 压缩数据
         String result = ExcelUtils.excelToCsv(multipartFile);
-        userInput.append("数据：").append(result).append("\n");
-        return ResultUtils.success(userInput.toString());
+        userInput.append(result).append("\n");
 
-        //读取用户上传的excel文件
-//        User loginUser = userService.getLoginUser(request);
-//
-//        File file = null;
-//        try {
-//
-//            return ResultUtils.success("");
-//        } catch (Exception e) {
-//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
-//        } finally {
-//            if (file != null) {
-//                // 删除临时文件
-//                boolean delete = file.delete();
-//                if (!delete) {
-//                    log.error("file delete error, filepath = {}");
-//                }
-//            }
-//        }
-    }
-
-    /**
-     * 校验文件
-     *
-     * @param multipartFile
-     * @param fileUploadBizEnum 业务类型
-     */
-    private void validFile(MultipartFile multipartFile, FileUploadBizEnum fileUploadBizEnum) {
-        // 文件大小
-        long fileSize = multipartFile.getSize();
-        // 文件后缀
-        String fileSuffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
-        final long ONE_M = 1024 * 1024L;
-        if (FileUploadBizEnum.USER_AVATAR.equals(fileUploadBizEnum)) {
-            if (fileSize > ONE_M) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件大小不能超过 1M");
-            }
-            if (!Arrays.asList("jpeg", "jpg", "svg", "png", "webp").contains(fileSuffix)) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件类型错误");
-            }
+        String res = aiManager.doChat(modeId, userInput.toString());
+        String[] splits = res.split("【【【【【");
+        if (splits.length <3){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"AI响应错误");
         }
+        String genChart = splits[1];
+        String genResult = splits[2];
+        BiResponse biResponse = new BiResponse();
+        biResponse.setGenChart(genChart);
+        biResponse.setGenResult(genResult);
+
+        return ResultUtils.success(biResponse);
     }
 }
