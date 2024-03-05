@@ -30,6 +30,11 @@ public class ChartEditRequest implements Serializable {
     private String goal;
 
     /**
+     * 图表名称
+     */
+    private String chartName;
+
+    /**
      * 图表数据
      */
     private String chartData;

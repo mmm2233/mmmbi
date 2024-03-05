@@ -1,6 +1,6 @@
 package com.mmm.springbootinit.controller;
 
-import cn.hutool.json.JSONUtil;
+import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mmm.springbootinit.annotation.AuthCheck;
 import com.mmm.springbootinit.common.BaseResponse;
@@ -10,22 +10,25 @@ import com.mmm.springbootinit.common.ResultUtils;
 import com.mmm.springbootinit.constant.UserConstant;
 import com.mmm.springbootinit.exception.BusinessException;
 import com.mmm.springbootinit.exception.ThrowUtils;
-import com.mmm.springbootinit.model.dto.chart.ChartAddRequest;
-import com.mmm.springbootinit.model.dto.chart.ChartEditRequest;
-import com.mmm.springbootinit.model.dto.chart.ChartQueryRequest;
-import com.mmm.springbootinit.model.dto.chart.ChartUpdateRequest;
+import com.mmm.springbootinit.manager.CosManager;
+import com.mmm.springbootinit.model.dto.chart.*;
 import com.mmm.springbootinit.model.entity.Chart;
 import com.mmm.springbootinit.model.entity.User;
+import com.mmm.springbootinit.model.enums.FileUploadBizEnum;
 import com.mmm.springbootinit.model.vo.ChartVO;
 import com.mmm.springbootinit.service.ChartService;
 import com.mmm.springbootinit.service.UserService;
+import com.mmm.springbootinit.utils.ExcelUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.io.File;
+import java.util.Arrays;
 
 /**
 *@Date：2024/3/2
@@ -37,11 +40,15 @@ import java.util.List;
 @RequestMapping("/chart")
 @Slf4j
 public class ChartController {
+    @javax.annotation.Resource
+    //@Resource
+    private CosManager cosManager;
 
-    @Resource
+    @javax.annotation.Resource
+    //@Resource
     private ChartService chartService;
-
-    @Resource
+    @javax.annotation.Resource
+    //@Resource
     private UserService userService;
 
     // region 增删改查
@@ -226,4 +233,72 @@ public class ChartController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 智能分析
+     *
+     * @param multipartFile
+     * @param request
+     * @return
+     */
+    @PostMapping("/gen")
+    public BaseResponse<String> getChartByAI(@RequestPart("file") MultipartFile multipartFile,
+                                             GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
+        String goal = genCharByAIRequest.getGoal();
+        String chartName = genCharByAIRequest.getChartName();
+        String chartType = genCharByAIRequest.getChartType();
+
+        //校验
+        ThrowUtils.throwIf(StringUtils.isBlank(goal),ErrorCode.PARAMS_ERROR,"目标为空");
+        ThrowUtils.throwIf(StringUtils.isNotBlank(chartName) && chartName.length() >100 ,ErrorCode.PARAMS_ERROR,"名称过长");
+
+        // 用户输入
+        StringBuilder userInput = new StringBuilder();
+        userInput.append("你是一个数据分析师，记下来我会给你分析目标和原始数据，请告诉我分析结论。").append("\n");
+        userInput.append("分析目标：").append(goal).append("\n");
+        // 压缩数据
+        String result = ExcelUtils.excelToCsv(multipartFile);
+        userInput.append("数据：").append(result).append("\n");
+        return ResultUtils.success(userInput.toString());
+
+        //读取用户上传的excel文件
+//        User loginUser = userService.getLoginUser(request);
+//
+//        File file = null;
+//        try {
+//
+//            return ResultUtils.success("");
+//        } catch (Exception e) {
+//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
+//        } finally {
+//            if (file != null) {
+//                // 删除临时文件
+//                boolean delete = file.delete();
+//                if (!delete) {
+//                    log.error("file delete error, filepath = {}");
+//                }
+//            }
+//        }
+    }
+
+    /**
+     * 校验文件
+     *
+     * @param multipartFile
+     * @param fileUploadBizEnum 业务类型
+     */
+    private void validFile(MultipartFile multipartFile, FileUploadBizEnum fileUploadBizEnum) {
+        // 文件大小
+        long fileSize = multipartFile.getSize();
+        // 文件后缀
+        String fileSuffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
+        final long ONE_M = 1024 * 1024L;
+        if (FileUploadBizEnum.USER_AVATAR.equals(fileUploadBizEnum)) {
+            if (fileSize > ONE_M) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件大小不能超过 1M");
+            }
+            if (!Arrays.asList("jpeg", "jpg", "svg", "png", "webp").contains(fileSuffix)) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件类型错误");
+            }
+        }
+    }
 }

@@ -83,16 +83,17 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         }
         String chartType = chartQueryRequest.getChartType();
         String goal = chartQueryRequest.getGoal();
+        String chartName = chartQueryRequest.getChartName();
         Long id = chartQueryRequest.getId();
         Long userId = chartQueryRequest.getUserId();
         String sortField = chartQueryRequest.getSortField();
         String sortOrder = chartQueryRequest.getSortOrder();
         // 拼接查询条件
-        queryWrapper.like(StringUtils.isNotBlank(chartType), "chartType", chartType);
-        queryWrapper.like(StringUtils.isNotBlank(goal), "goal", goal);
-
-        if (id > 0)queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
-        if (userId > 0) queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
+        queryWrapper.eq(StringUtils.isNotBlank(chartType), "chartType", chartType);
+        queryWrapper.eq(StringUtils.isNotBlank(goal), "goal", goal);
+        queryWrapper.like(StringUtils.isNotBlank(chartName), "chartName", chartName);
+        queryWrapper.eq(id!=null && id > 0, "id", id);
+        queryWrapper.eq(userId!=null && userId > 0, "userId", userId);
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return queryWrapper;
