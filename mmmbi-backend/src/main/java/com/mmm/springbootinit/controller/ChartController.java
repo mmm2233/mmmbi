@@ -43,7 +43,7 @@ import java.util.Arrays;
 @Slf4j
 public class ChartController {
 
-    private static final Long modeId = 1661220670853435394L;
+    private static final Long modeId = 1764911875029946369L;
 
     @Resource
     private CosManager cosManager;
@@ -290,7 +290,7 @@ public class ChartController {
         userInput.append(result).append("\n");
 
         String res = aiManager.doChat(modeId, userInput.toString());
-        String[] splits = res.split("【【【【【");
+        String[] splits = res.split("【【【【");
         if (splits.length <3){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,"AI响应错误");
         }
