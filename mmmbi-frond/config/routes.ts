@@ -6,7 +6,8 @@ export default [
             ],
   },
   {path:'/',redirect:'/add_chart'},
-  {path:'/add_chart',icon:'barChart',component:'./AddChart'},
+  {path:'/add_chart',name:'图表分析',icon:'barChart',component:'./AddChart'},
+  {path:'/my_chart',name:'我的图表',icon:'pieChart',component:'./MyChart'},
   { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
   {
     path: '/admin',
