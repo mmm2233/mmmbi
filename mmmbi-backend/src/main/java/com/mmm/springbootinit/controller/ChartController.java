@@ -12,6 +12,7 @@ import com.mmm.springbootinit.exception.BusinessException;
 import com.mmm.springbootinit.exception.ThrowUtils;
 import com.mmm.springbootinit.manager.AIManager;
 import com.mmm.springbootinit.manager.CosManager;
+import com.mmm.springbootinit.manager.RedisLimiterManager;
 import com.mmm.springbootinit.model.dto.chart.*;
 import com.mmm.springbootinit.model.entity.Chart;
 import com.mmm.springbootinit.model.entity.User;
@@ -57,6 +58,9 @@ public class ChartController {
 
     @Resource
     private AIManager aiManager;
+
+    @Resource
+    private RedisLimiterManager redisLimiterManager;
 
     // region 增删改查
 
@@ -268,6 +272,9 @@ public class ChartController {
         ThrowUtils.throwIf(!validFileSuffixList.contains(suffix),ErrorCode.PARAMS_ERROR,"文件后缀非法");
 
         User loginUser = userService.getLoginUser(request);
+
+        // 限流判断
+        redisLimiterManager.doRateLimit("getChartByAI_" + loginUser.getId());
 //        final String prompt ="你是一个数据分析师和前端开发专家，接下来我会按照以下固定格式给你提供内容:\n" +
 //                "分析需求:\n" +
 //                "{数据分析的需求或者目标}\n" +
