@@ -64,6 +64,16 @@ public class Chart implements Serializable {
      */
     private Date updateTime;
 
+    /*
+        生成状态
+     */
+    private String status;
+
+    /*
+        生成结果信息
+     */
+    private String  execMessage;
+
     /**
      * 是否删除
      */

@@ -19,6 +19,6 @@
     <sql id="Base_Column_List">
         id,goal,chartName,chartData,
         chartType,genChart,genResult,userId,
-        createTime,updateTime,isDelete
+        createTime,updateTime,isDelete,status,execMessage
     </sql>
 </mapper>

@@ -76,6 +76,16 @@ public class ChartVO implements Serializable {
      */
     private Date updateTime;
 
+    /*
+        生成状态
+     */
+    private String status;
+
+    /*
+        生成结果信息
+     */
+    private String  execMessage;
+
     /**
      * 包装类转对象
      *
