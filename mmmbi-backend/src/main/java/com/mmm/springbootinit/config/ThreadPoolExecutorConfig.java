@@ -34,6 +34,8 @@ public class ThreadPoolExecutorConfig {
             }
         };
 
+        //todo 反向压力:https://zhuanlan.zhihu.com/p/404993753 当第三方AI接口的调用服务状态，比如通过AI任务队列数来控制系统的核心线程数，
+        // 可以用定时任务
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(2, 4, 100, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(4), threadFactory);
 
