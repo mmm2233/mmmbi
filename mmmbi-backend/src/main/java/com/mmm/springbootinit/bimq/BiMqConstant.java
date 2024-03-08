@@ -15,4 +15,11 @@ public interface BiMqConstant {
 
     String BI_ROUTING_KEY = "bi_routingKey";
 
+    String BI_EXCHANGE_DEAD = "bi_exchange_dead";
+
+    String BI_QUEUE_DEAD = "bi_queue_dead";
+
+    String BI_ROUTING_DEAD = "bi_routingdead";
+
+
 }
