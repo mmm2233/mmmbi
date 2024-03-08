@@ -36,9 +36,13 @@ const MyChartPage: React.FC = () => {
         if (res.data.records) {
           res.data.records.forEach(data => {
             if (data.status === 'succeed') {
-              const chartOption = JSON.parse(data.genChart ?? '{}');
-              chartOption.title = undefined;
-              data.genChart = JSON.stringify(chartOption);
+              try{
+                const chartOption = JSON.parse(data.genChart ?? '{}');
+                chartOption.title = undefined;
+                data.genChart = JSON.stringify(chartOption);
+              }catch(error){
+                
+              }
             }
           })
         }

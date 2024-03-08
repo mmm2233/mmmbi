@@ -5,6 +5,7 @@ import cn.hutool.db.PageResult;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mmm.springbootinit.annotation.AuthCheck;
 import com.mmm.springbootinit.bimq.BiMessageProducer;
+import com.mmm.springbootinit.bimq.BiMqConstant;
 import com.mmm.springbootinit.common.BaseResponse;
 import com.mmm.springbootinit.common.DeleteRequest;
 import com.mmm.springbootinit.common.ErrorCode;
@@ -27,20 +28,25 @@ import com.mmm.springbootinit.service.ChartService;
 import com.mmm.springbootinit.service.UserService;
 import com.mmm.springbootinit.utils.ExcelUtils;
 import com.mmm.springbootinit.utils.RedisUtils;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RList;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.RedisClient;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.nio.channels.Channel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,9 +68,6 @@ public class ChartController {
     private static final Long modeId = CommonConstant.modeId;
 
     @Resource
-    private RedisTemplate redisTemplate;
-
-    @Resource
     private BiMessageProducer biMessageProducer;
 
     @Resource
@@ -78,9 +81,6 @@ public class ChartController {
 
     @Resource
     private RedisLimiterManager redisLimiterManager;
-
-    @Resource
-    private RedissonClient redissonClient;
 
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
@@ -106,6 +106,9 @@ public class ChartController {
         chart.setUserId(loginUser.getId());
         boolean result = chartService.save(chart);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        if (result){
+            biMessageProducer.sendMessageCache("刷新缓存");
+        }
         long newChartId = chart.getId();
         return ResultUtils.success(newChartId);
     }
@@ -132,6 +135,9 @@ public class ChartController {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean b = chartService.removeById(id);
+        if (b){
+            biMessageProducer.sendMessageCache("刷新缓存");
+        }
         return ResultUtils.success(b);
     }
 
@@ -156,6 +162,9 @@ public class ChartController {
         Chart oldChart = chartService.getById(id);
         ThrowUtils.throwIf(oldChart == null, ErrorCode.NOT_FOUND_ERROR);
         boolean result = chartService.updateById(chart);
+        if (result) {
+            biMessageProducer.sendMessageCache("刷新缓存");
+        }
         return ResultUtils.success(result);
     }
 
@@ -187,8 +196,8 @@ public class ChartController {
     //todo 这里分页数据没有必要走缓存进行查询，分页数据不适合缓存，这里可以使用es加大搜索
     // 速度这里练习下redis
 //    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest,HttpServletRequest httpServletRequest) {
-        if (chartQueryRequest == null){
+    public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest, HttpServletRequest httpServletRequest) {
+        if (chartQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
@@ -206,7 +215,7 @@ public class ChartController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<ChartVO>> listChartVOByPage(@RequestBody ChartQueryRequest chartQueryRequest,
-            HttpServletRequest request) {
+                                                         HttpServletRequest request) {
         long current = chartQueryRequest.getCurrent();
         long size = chartQueryRequest.getPageSize();
         // 限制爬虫
@@ -225,7 +234,7 @@ public class ChartController {
      */
     @PostMapping("/my/list/page/vo")
     public BaseResponse<Page<ChartVO>> listMyChartVOByPage(@RequestBody ChartQueryRequest chartQueryRequest,
-            HttpServletRequest request) {
+                                                           HttpServletRequest request) {
         if (chartQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -268,6 +277,9 @@ public class ChartController {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean result = chartService.updateById(chart);
+        if (result) {
+            biMessageProducer.sendMessageCache("刷新缓存");
+        }
         return ResultUtils.success(result);
     }
 
@@ -281,12 +293,12 @@ public class ChartController {
     @PostMapping("/gen")
     public BaseResponse<BiResponse> getChartByAI(@RequestPart("file") MultipartFile multipartFile,
                                                  GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
-        Chart chart = getChart(multipartFile,genCharByAIRequest,request);
+        Chart chart = getChart(multipartFile, genCharByAIRequest, request);
 
-        String res = aiManager.doChat(modeId,chart.getGenResult());
+        String res = aiManager.doChat(modeId, chart.getGenResult());
         String[] splits = res.split("【【【【");
-        if (splits.length <3){
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"AI响应错误");
+        if (splits.length < 3) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "AI响应错误");
         }
         String genChart = splits[1].trim();
         String genResult = splits[2].trim();
@@ -297,7 +309,9 @@ public class ChartController {
         chart.setStatus(FutureStatus.SUCCEED.getValue());
         boolean saveResult = chartService.save(chart);
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败！");
-
+        if(saveResult){
+            biMessageProducer.sendMessageCache("刷新缓存");
+        }
         BiResponse biResponse = new BiResponse();
         biResponse.setGenChart(genChart);
         biResponse.setGenResult(genResult);
@@ -315,7 +329,7 @@ public class ChartController {
      */
     @PostMapping("/gen/async")
     public BaseResponse<BiResponse> getChartByAIAsync(@RequestPart("file") MultipartFile multipartFile,
-                                             GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
+                                                      GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
         Chart chart = getChart(multipartFile, genCharByAIRequest, request);
         boolean saveResult = chartService.save(chart);
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败！");
@@ -328,8 +342,8 @@ public class ChartController {
                 updateChart.setId(chart.getId());
                 updateChart.setStatus(FutureStatus.RUNING.getValue());
                 boolean r = chartService.updateById(updateChart);
-                if (!r){
-                    handleChartUpdateError(chart.getId(),"更改图表正在审核中失败");
+                if (!r) {
+                    handleChartUpdateError(chart.getId(), "更改图表正在审核中失败");
                     return;
                 }
 
@@ -337,7 +351,7 @@ public class ChartController {
                 String[] splits = res.split("【【【【");
                 if (splits.length < 3) {
                     // todo guaya Retrying重试机制，当AI响应错误时进行重试
-                    handleChartUpdateError(chart.getId(),"AI响应错误");
+                    handleChartUpdateError(chart.getId(), "AI响应错误");
                     return;
                 }
                 // todo 控制ai生成数据格式
@@ -349,13 +363,15 @@ public class ChartController {
                 aiupdateChart.setGenResult(genResult);
                 aiupdateChart.setStatus(FutureStatus.SUCCEED.getValue());
                 boolean updateResult = chartService.updateById(aiupdateChart);
-                if (!updateResult){
-                    handleChartUpdateError(chart.getId(),"更新图表成功状态失败");
+                if (!updateResult) {
+                    handleChartUpdateError(chart.getId(), "更新图表成功状态失败");
+                }else {
+                    biMessageProducer.sendMessageCache("刷新缓存");
                 }
-            },threadPoolExecutor);
-        }catch (RejectedExecutionException e){
+            }, threadPoolExecutor);
+        } catch (RejectedExecutionException e) {
             //todo 任务队列满了，使用定时任务将失败状态图表放到队列中
-            handleChartUpdateError(chart.getId(),"生成图表执行任务失败");
+            handleChartUpdateError(chart.getId(), "生成图表执行任务失败");
         }
 
         BiResponse biResponse = new BiResponse();
@@ -367,12 +383,15 @@ public class ChartController {
     // 异步消息队列
     @PostMapping("/gen/async/mq")
     public BaseResponse<BiResponse> getChartByAIAsyncMq(@RequestPart("file") MultipartFile multipartFile,
-                                                      GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
+                                                        GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
         Chart chart = getChart(multipartFile, genCharByAIRequest, request);
         boolean saveResult = chartService.save(chart);
 
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败！");
-        long newChartId =chart.getId();
+        if (saveResult) {
+            biMessageProducer.sendMessageCache("刷新缓存");
+        }
+        long newChartId = chart.getId();
         biMessageProducer.sendMessage(String.valueOf(newChartId));
 
         BiResponse biResponse = new BiResponse();
@@ -381,23 +400,23 @@ public class ChartController {
         return ResultUtils.success(biResponse);
     }
 
-    private Chart getChart(MultipartFile multipartFile,GenCharByAIRequest genCharByAIRequest, HttpServletRequest request){
+    private Chart getChart(MultipartFile multipartFile, GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
         String goal = genCharByAIRequest.getGoal();
         String chartName = genCharByAIRequest.getChartName();
         String chartType = genCharByAIRequest.getChartType();
 
         //校验
-        ThrowUtils.throwIf(StringUtils.isBlank(goal),ErrorCode.PARAMS_ERROR,"目标为空");
-        ThrowUtils.throwIf(StringUtils.isNotBlank(chartName) && chartName.length() >100 ,ErrorCode.PARAMS_ERROR,"名称过长");
+        ThrowUtils.throwIf(StringUtils.isBlank(goal), ErrorCode.PARAMS_ERROR, "目标为空");
+        ThrowUtils.throwIf(StringUtils.isNotBlank(chartName) && chartName.length() > 100, ErrorCode.PARAMS_ERROR, "名称过长");
         //校验文件
         long size = multipartFile.getSize();
         String originalFilename = multipartFile.getOriginalFilename();
-        final long ONE_MB = 1024*1024L;
-        ThrowUtils.throwIf(size > ONE_MB, ErrorCode.PARAMS_ERROR,"文件大小超过1M");
+        final long ONE_MB = 1024 * 1024L;
+        ThrowUtils.throwIf(size > ONE_MB, ErrorCode.PARAMS_ERROR, "文件大小超过1M");
         // 校验文件后缀
         String suffix = FileUtil.getSuffix(originalFilename);
-        final List<String> validFileSuffixList = Arrays.asList("xls","xlsx");
-        ThrowUtils.throwIf(!validFileSuffixList.contains(suffix),ErrorCode.PARAMS_ERROR,"文件后缀非法");
+        final List<String> validFileSuffixList = Arrays.asList("xls", "xlsx");
+        ThrowUtils.throwIf(!validFileSuffixList.contains(suffix), ErrorCode.PARAMS_ERROR, "文件后缀非法");
 
         User loginUser = userService.getLoginUser(request);
 
@@ -407,7 +426,7 @@ public class ChartController {
         StringBuilder userInput = new StringBuilder();
         userInput.append("分析需求：").append("\n");
         String userGoal = goal;
-        if (StringUtils.isNotBlank(chartType)){
+        if (StringUtils.isNotBlank(chartType)) {
             userGoal = userGoal + ".请使用" + chartType;
         }
         userInput.append(userGoal).append("\n");
@@ -417,7 +436,7 @@ public class ChartController {
         userInput.append(chartData).append("\n");
 
         // to db
-        Chart chart =new Chart();
+        Chart chart = new Chart();
         chart.setGoal(userGoal);
         chart.setChartName(chartName);
         chart.setChartData(chartData);
@@ -429,14 +448,14 @@ public class ChartController {
         return chart;
     }
 
-    private void handleChartUpdateError(Long chartId,String execMessage) {
+    private void handleChartUpdateError(Long chartId, String execMessage) {
         Chart updateChartResult = new Chart();
         updateChartResult.setId(chartId);
         updateChartResult.setStatus(FutureStatus.FAILED.getValue());
         updateChartResult.setExecMessage(execMessage);
         boolean updateResult = chartService.updateById(updateChartResult);
         if (updateResult) {
-            log.error("更新图表失败状态失败" + chartId + "," +execMessage);
+            log.error("更新图表失败状态失败" + chartId + "," + execMessage);
         }
     }
 }

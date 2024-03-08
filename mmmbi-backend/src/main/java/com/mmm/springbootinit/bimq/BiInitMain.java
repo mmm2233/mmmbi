@@ -48,6 +48,15 @@ public class BiInitMain {
             String queuedeadName =BI_QUEUE_DEAD;
             channel.queueDeclare(queuedeadName,true,false,false,null);
             channel.queueBind(queuedeadName,BI_EXCHANGE_DEAD,"");
+
+            // 创建缓存队列交换机等
+            // todo 按道理说这里消息失败还应该有个死信队列处理，以后写吧
+            String EXCHANGE_CACHE = BI_EXCHANGE_CACHE;
+            channel.exchangeDeclare(EXCHANGE_CACHE,"direct");
+            String queueCache = BI_QUEUE_CACHE;
+            channel.queueDeclare(queueCache,true,false,false,null);
+            channel.queueBind(queueCache,BI_EXCHANGE_CACHE,BI_ROUTING_CACHE);
+
         } catch (TimeoutException e) {
             e.printStackTrace();
         } catch (IOException e) {

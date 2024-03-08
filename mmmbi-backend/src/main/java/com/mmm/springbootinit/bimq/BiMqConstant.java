@@ -19,7 +19,11 @@ public interface BiMqConstant {
 
     String BI_QUEUE_DEAD = "bi_queue_dead";
 
-    String BI_ROUTING_DEAD = "bi_routingdead";
+    String BI_EXCHANGE_CACHE = "bi_exchange_cache";
+
+    String BI_QUEUE_CACHE ="bi_queue_cache";
+
+    String BI_ROUTING_CACHE = "bi_queue_cache";
 
 
 }
