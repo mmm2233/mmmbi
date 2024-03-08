@@ -1,6 +1,7 @@
 package com.mmm.springbootinit.controller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.db.PageResult;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mmm.springbootinit.annotation.AuthCheck;
 import com.mmm.springbootinit.bimq.BiMessageProducer;
@@ -25,6 +26,7 @@ import com.mmm.springbootinit.model.vo.ChartVO;
 import com.mmm.springbootinit.service.ChartService;
 import com.mmm.springbootinit.service.UserService;
 import com.mmm.springbootinit.utils.ExcelUtils;
+import com.mmm.springbootinit.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RList;
@@ -32,6 +34,7 @@ import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.RedisClient;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,6 +60,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class ChartController {
 
     private static final Long modeId = CommonConstant.modeId;
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
     @Resource
     private BiMessageProducer biMessageProducer;
@@ -178,14 +184,17 @@ public class ChartController {
      * @return
      */
     @PostMapping("/list/page")
-    //todo 这里分页数据没有必要走缓存进行查询，分页数据不适合缓存，这里可以使用es加大搜索速度
+    //todo 这里分页数据没有必要走缓存进行查询，分页数据不适合缓存，这里可以使用es加大搜索
+    // 速度这里练习下redis
 //    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest) {
-        long current = chartQueryRequest.getCurrent();
-        long size = chartQueryRequest.getPageSize();
-        Page<Chart> chartPage = chartService.page(new Page<>(current, size),
-                chartService.getQueryWrapper(chartQueryRequest));
-        return ResultUtils.success(chartPage);
+    public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest,HttpServletRequest httpServletRequest) {
+        if (chartQueryRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        Page<Chart> chartPageByRedis = chartService.getChartPageByRedis(chartQueryRequest, httpServletRequest);
+
+        return ResultUtils.success(chartPageByRedis);
     }
 
     /**

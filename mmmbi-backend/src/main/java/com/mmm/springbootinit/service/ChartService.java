@@ -47,4 +47,15 @@ public interface ChartService extends IService<Chart> {
      * @return
      */
     Page<ChartVO> getChartVOPage(Page<Chart> chartPage, HttpServletRequest request);
+
+    /**
+     *  从缓存中分页查询图表
+     *@Date：2024/3/8
+     *@Author：mmm
+     *@return：
+     *
+     */
+    Page<Chart> getChartPageByRedis(ChartQueryRequest chartQueryRequest,HttpServletRequest httpServletRequest);
+
+
 }

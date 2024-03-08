@@ -15,6 +15,7 @@ import com.mmm.springbootinit.model.vo.UserVO;
 import com.mmm.springbootinit.service.ChartService;
 import com.mmm.springbootinit.mapper.ChartMapper;
 import com.mmm.springbootinit.service.UserService;
+import com.mmm.springbootinit.utils.RedisUtils;
 import com.mmm.springbootinit.utils.SqlUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,11 +30,13 @@ import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +49,14 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
     private UserService userService;
 
     @Resource
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    private ChartService chartService;
+
+    private final String CACHE_USER_PAGE = "cache_user_page";
+
+    private final String CACHE_PAGE_ARG = "cache_page_arg";
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
     @Override
     public void validChart(Chart chart, boolean add) {
@@ -94,6 +104,8 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         queryWrapper.like(StringUtils.isNotBlank(chartName), "chartName", chartName);
         queryWrapper.eq(id!=null && id > 0, "id", id);
         queryWrapper.eq(userId!=null && userId > 0, "userId", userId);
+
+        // 添加排序条件
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return queryWrapper;
@@ -140,6 +152,30 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         }).collect(Collectors.toList());
         chartVOPage.setRecords(chartVOList);
         return chartVOPage;
+    }
+
+    @Override
+    public Page<Chart> getChartPageByRedis(ChartQueryRequest chartQueryRequest,HttpServletRequest httpServletRequest) {
+        long current = chartQueryRequest.getCurrent();
+        long size = chartQueryRequest.getPageSize();
+
+        User loginUser = userService.getLoginUser(httpServletRequest);
+        // 每个用户id唯一
+        String pageUser = CACHE_USER_PAGE + loginUser.getId();
+        // 根据需要查询的当前页和大小组合
+        String userPageArg = CACHE_PAGE_ARG + current+ ":" + size;
+        Object chartPageInfo = redisTemplate.opsForHash().get(pageUser, userPageArg);
+        if (chartPageInfo == null){
+            Page<Chart> chartPage = chartService.page(new Page<>(current, size),
+                    chartService.getQueryWrapper(chartQueryRequest));
+            redisTemplate.opsForHash().put(pageUser,userPageArg,chartPage);
+            redisTemplate.expire(pageUser,360 , TimeUnit.MINUTES);
+            return chartPage;
+        }
+
+        Object userChartPageInfo = redisTemplate.opsForHash().get(pageUser, userPageArg);
+        Page<Chart> cacheResult = RedisUtils.convertToPage(userChartPageInfo,Chart.class);
+        return cacheResult;
     }
 }
 
