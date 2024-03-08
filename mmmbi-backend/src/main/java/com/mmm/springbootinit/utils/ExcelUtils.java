@@ -51,13 +51,13 @@ public class ExcelUtils {
         LinkedHashMap<Integer, String> headerMap = (LinkedHashMap)list.get(0);
         headerMap.values().stream().filter(ObjectUtils::isNotEmpty).collect(Collectors.toList());
         stringBuilder.append(StringUtils.join(headerMap.values(),","));
-        //stringBuilder.append("\n");
+        stringBuilder.append(",");
         // 2.从第一行读取数据
         for(int i =1;i < list.size();i++){
             LinkedHashMap<Integer, String> dataMap = (LinkedHashMap)list.get(i);
             List<String> datalist = dataMap.values().stream().filter(ObjectUtils::isNotEmpty).collect(Collectors.toList());
             stringBuilder.append(StringUtils.join(datalist,","));
-            //stringBuilder.append("\n");
+            stringBuilder.append(",");
         }
         return stringBuilder.toString();
     }

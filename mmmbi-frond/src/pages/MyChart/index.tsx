@@ -1,4 +1,5 @@
 import { listChartByPageUsingPost } from '@/services/mmmbi/chartController';
+
 import { useModel } from '@@/exports';
 import {Avatar, Card, List, message, Result} from 'antd';
 import ReactECharts from 'echarts-for-react';
@@ -123,6 +124,13 @@ const MyChartPage: React.FC = () => {
                     <p>{'分析目标：' + item.goal}</p>
                     <div style={{ marginBottom: 16 }} />
                     <ReactECharts option={item.genChart && JSON.parse(item.genChart)} />
+                  </>
+                }
+                {
+                  item.status === 'succeed' && <>
+                    <div style={{ marginBottom: 16 }} />
+                    <p>{'分析结论：' + item.genResult}</p>
+                    <div style={{ marginBottom: 16 }} />
                   </>
                 }
                 {

@@ -46,7 +46,8 @@ public class BiMessageConsumer {
     @RabbitListener(queues ={BiMqConstant.BI_QUEUE_NAME} ,ackMode = "MANUAL")
     public void receiveMessage(String message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG)long deliveryTag) throws IOException {
         log.info("receiveMessage message{}",message);
-        if (StringUtils.isNotBlank(message)){
+
+        if (StringUtils.isBlank(message)){
             channel.basicNack(deliveryTag,false,false);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,"消息为空");
         }
