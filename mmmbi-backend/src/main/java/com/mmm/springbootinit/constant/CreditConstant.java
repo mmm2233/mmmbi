@@ -16,7 +16,12 @@ public interface CreditConstant {
     Long CREDIT_DAILY = 100L;
 
     /**
-     * 每日签到积分
+     *
      */
     Long CREDIT_TIME = -20L;
+
+    /**
+     *
+     */
+    Long CREDIT_TIME_1 = 20L;
 }

@@ -16,9 +16,11 @@ import com.mmm.springbootinit.model.dto.user.UserQueryRequest;
 import com.mmm.springbootinit.model.dto.user.UserRegisterRequest;
 import com.mmm.springbootinit.model.dto.user.UserUpdateMyRequest;
 import com.mmm.springbootinit.model.dto.user.UserUpdateRequest;
+import com.mmm.springbootinit.model.entity.Credit;
 import com.mmm.springbootinit.model.entity.User;
 import com.mmm.springbootinit.model.vo.LoginUserVO;
 import com.mmm.springbootinit.model.vo.UserVO;
+import com.mmm.springbootinit.service.CreditService;
 import com.mmm.springbootinit.service.UserService;
 
 import java.util.List;
@@ -32,6 +34,7 @@ import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,6 +58,9 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private CreditService creditService;
 
     // region 登录相关
 
@@ -140,6 +146,7 @@ public class UserController {
      */
     @PostMapping("/add")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @Transactional
     public BaseResponse<Long> addUser(@RequestBody UserAddRequest userAddRequest, HttpServletRequest request) {
         if (userAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -151,6 +158,13 @@ public class UserController {
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + defaultPassword).getBytes());
         user.setUserPassword(encryptPassword);
         boolean result = userService.save(user);
+
+        Credit credit = new Credit();
+        Long userId = user.getId();
+        credit.setUserId(userId);
+        boolean save = creditService.save(credit);
+        ThrowUtils.throwIf(!save,ErrorCode.SYSTEM_ERROR,"注册失败，数据库错误");
+
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(user.getId());
     }

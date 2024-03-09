@@ -26,4 +26,16 @@ public interface BiMqConstant {
     String BI_ROUTING_CACHE = "bi_queue_cache";
 
     String BI_ROUTING_DEAD ="bi_routing_dead";
+
+    String ORDERS_DEAD_QUEUE_NAME ="orders_dead_queue_name";
+
+    String ORDERS_DEAD_EXCHANGE_NAME ="orders_dead_exchange_name";
+
+    String ORDERS_DEAD_ROUTING_KEY ="orders_dead_routing_key";
+
+    String ORDERS_QUEUE_NAME ="orders_queue_name";
+
+    String ORDERS_EXCHANGE_NAME ="orders_exchange_name";
+
+    String ORDERS_ROUTING_KEY = "orders_routing_key";
 }
