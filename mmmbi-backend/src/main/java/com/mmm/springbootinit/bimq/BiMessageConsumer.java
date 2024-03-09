@@ -1,5 +1,6 @@
 package com.mmm.springbootinit.bimq;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.io.FileUtil;
 import com.mmm.springbootinit.common.ErrorCode;
 import com.mmm.springbootinit.constant.CommonConstant;
@@ -11,12 +12,14 @@ import com.mmm.springbootinit.model.entity.User;
 import com.mmm.springbootinit.model.enums.FutureStatus;
 import com.mmm.springbootinit.service.ChartService;
 import com.mmm.springbootinit.utils.ExcelUtils;
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +36,7 @@ import java.util.List;
  * @Date：2024/3/7 18:34
  * @Filename：MyMessageConsumer
  */
-@Component
+@Configuration
 @Slf4j
 public class BiMessageConsumer {
 
@@ -71,12 +74,13 @@ public class BiMessageConsumer {
         String res = aiManager.doChat(CommonConstant.modeId, buildUserInput(chart));
         String[] splits = res.split("【【【【");
         if (splits.length < 3) {
-            // todo guaya Retrying重试机制，当AI响应错误时进行重试
-            channel.basicNack(deliveryTag,false,false);
+            // todo guaya Retrying重试机制，当AI响应错误时进行重试,这使用消息队列重新入队，通过空消息存活时间控制重试次数
+            log.warn("信息放入队列{}", DateTime.now());
+            channel.basicNack(deliveryTag,false,true);
             handleChartUpdateError(chart.getId(),"AI响应错误");
             return;
         }
-        // todo 控制ai生成数据格式
+        // todo 控制ai生成数据格式,可以通过正则判断生成格式正确，不正确进行重试
         String genChart = splits[1].trim();
         String genResult = splits[2].trim();
         Chart aiupdateChart = new Chart();
