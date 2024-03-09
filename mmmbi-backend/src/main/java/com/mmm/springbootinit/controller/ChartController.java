@@ -2,6 +2,7 @@ package com.mmm.springbootinit.controller;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.db.PageResult;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mmm.springbootinit.annotation.AuthCheck;
 import com.mmm.springbootinit.bimq.BiMessageProducer;
@@ -11,6 +12,7 @@ import com.mmm.springbootinit.common.DeleteRequest;
 import com.mmm.springbootinit.common.ErrorCode;
 import com.mmm.springbootinit.common.ResultUtils;
 import com.mmm.springbootinit.constant.CommonConstant;
+import com.mmm.springbootinit.constant.CreditConstant;
 import com.mmm.springbootinit.constant.UserConstant;
 import com.mmm.springbootinit.exception.BusinessException;
 import com.mmm.springbootinit.exception.ThrowUtils;
@@ -19,12 +21,14 @@ import com.mmm.springbootinit.manager.CosManager;
 import com.mmm.springbootinit.manager.RedisLimiterManager;
 import com.mmm.springbootinit.model.dto.chart.*;
 import com.mmm.springbootinit.model.entity.Chart;
+import com.mmm.springbootinit.model.entity.Credit;
 import com.mmm.springbootinit.model.entity.User;
 import com.mmm.springbootinit.model.enums.FileUploadBizEnum;
 import com.mmm.springbootinit.model.enums.FutureStatus;
 import com.mmm.springbootinit.model.vo.BiResponse;
 import com.mmm.springbootinit.model.vo.ChartVO;
 import com.mmm.springbootinit.service.ChartService;
+import com.mmm.springbootinit.service.CreditService;
 import com.mmm.springbootinit.service.UserService;
 import com.mmm.springbootinit.utils.ExcelUtils;
 import com.mmm.springbootinit.utils.RedisUtils;
@@ -84,6 +88,9 @@ public class ChartController {
 
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
+
+    @Resource
+    private CreditService creditService;
 
     // region 增删改查
 
@@ -295,6 +302,12 @@ public class ChartController {
                                                  GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
         Chart chart = getChart(multipartFile, genCharByAIRequest, request);
 
+        Boolean creditResult = creditService.consumeCredits(chart.getUserId(),CreditConstant.CREDIT_TIME);
+        ThrowUtils.throwIf(!creditResult,ErrorCode.OPERATION_ERROR,"你的积分不足");
+        // todo 扣除积分之后，立即保存不知道有没有问题
+        boolean saveResult = chartService.save(chart);
+        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败！");
+
         String res = aiManager.doChat(modeId, chart.getGenResult());
         String[] splits = res.split("【【【【");
         if (splits.length < 3) {
@@ -307,7 +320,8 @@ public class ChartController {
         chart.setGenChart(genChart);
         chart.setGenResult(genResult);
         chart.setStatus(FutureStatus.SUCCEED.getValue());
-        boolean saveResult = chartService.save(chart);
+
+        saveResult = chartService.save(chart);
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败！");
         if(saveResult){
             biMessageProducer.sendMessageCache("刷新缓存");
@@ -331,6 +345,8 @@ public class ChartController {
     public BaseResponse<BiResponse> getChartByAIAsync(@RequestPart("file") MultipartFile multipartFile,
                                                       GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
         Chart chart = getChart(multipartFile, genCharByAIRequest, request);
+        Boolean creditResult = creditService.consumeCredits(chart.getUserId(),CreditConstant.CREDIT_TIME);
+        ThrowUtils.throwIf(!creditResult,ErrorCode.OPERATION_ERROR,"你的积分不足");
         boolean saveResult = chartService.save(chart);
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败！");
         // todo 处理任务状态满了爆异常，处理任务设置超时时间
@@ -385,6 +401,8 @@ public class ChartController {
     public BaseResponse<BiResponse> getChartByAIAsyncMq(@RequestPart("file") MultipartFile multipartFile,
                                                         GenCharByAIRequest genCharByAIRequest, HttpServletRequest request) {
         Chart chart = getChart(multipartFile, genCharByAIRequest, request);
+        Boolean creditResult = creditService.consumeCredits(chart.getUserId(),CreditConstant.CREDIT_TIME);
+        ThrowUtils.throwIf(!creditResult,ErrorCode.OPERATION_ERROR,"你的积分不足");
         boolean saveResult = chartService.save(chart);
 
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败！");
@@ -458,4 +476,5 @@ public class ChartController {
             log.error("更新图表失败状态失败" + chartId + "," + execMessage);
         }
     }
+
 }

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
 *@Date：2024/3/2
@@ -19,6 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @MapperScan("com.mmm.springbootinit.mapper")
 @EnableScheduling
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
+@EnableTransactionManagement
 public class MainApplication {
 
     public static void main(String[] args) {
