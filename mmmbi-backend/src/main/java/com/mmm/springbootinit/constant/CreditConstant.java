@@ -24,4 +24,14 @@ public interface CreditConstant {
      *
      */
     Long CREDIT_TIME_1 = 20L;
+
+    /**
+     * 生成文本消耗积分
+     */
+    long CREDIT_TEXT_SUCCESS = -10;
+
+    /**
+     * 生成文本失败返回积分
+     */
+    long CREDIT_TEXT_FALSE = 10;
 }

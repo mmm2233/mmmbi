@@ -7,7 +7,7 @@ import com.mmm.springbootinit.mapper.OrdersMapper;
 import org.springframework.stereotype.Service;
 
 /**
- * 支付订单
+ *
  */
 @Service
 public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders>

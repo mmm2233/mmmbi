@@ -10,12 +10,11 @@
             <result property="creditTotal" column="creditTotal" jdbcType="BIGINT"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
-            <result property="checkTime" column="checkTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,userId,creditTotal,
-        createTime,updateTime,isDelete,checkTime
+        createTime,updateTime,isDelete
     </sql>
 </mapper>

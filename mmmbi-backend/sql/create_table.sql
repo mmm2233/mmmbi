@@ -48,31 +48,46 @@ create table if not exists credit
     isDelete   tinyint  default 0                 not null comment '是否删除'
 ) comment '积分表' collate = utf8mb4_unicode_ci;
 
--- 订单表
+-- 充值订单表
 create table if not exists orders
 (
-    id               bigint auto_increment comment 'id' primary key,
-    userId           bigint                             not null comment '用户 id',
-    purchaseQuantity bigint(0)                          NOT NULL COMMENT '购买数量',
-    price            float(255, 2)                      NOT NULL COMMENT '单价',
-    totalAmount      float(10, 2)                       NOT NULL COMMENT '交易金额',
-    orderStatus      int(0)                             NOT NULL DEFAULT 0 COMMENT '交易状态【0->待付款；1->已完成；2->无效订单,3->删除订单】',
-    createTime       datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    updateTime       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    isDelete         tinyint  default 0                 not null comment '是否删除'
-) comment '订单表' collate = utf8mb4_unicode_ci;
+    id            bigint auto_increment comment 'id' primary key comment '订单id',
+    alipayTradeNo varchar(128)                       null comment '支付宝交易凭证id',
+    `userId`      bigint                             NOT NULL COMMENT '用户id',
+    subject       varchar(128)                       not null comment '交易名称',
+    totalAmount   double                             not null comment '交易金额',
+    tradeStatus   varchar(128)                       not null default 'unpaid ' comment 'unpaid,paying,succeed,failed',
+    buyerId       varchar(64)                        null comment '支付宝买家id',
+    createTime    datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime    datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete      tinyint  default 0                 not null comment '是否删除'
+) comment '充值订单表' collate = utf8mb4_unicode_ci;
 
--- 支付记录表
-create table if not exists ordersinfo
+-- 文本任务表
+create table if not exists text_task
 (
-    id              bigint auto_increment comment 'id' primary key,
-    userId          bigint                             not null comment '用户 id',
-    alipayAccountNo varchar(512)                       not null comment '支付宝流水账号',
-    alipayId        varchar(1024) comment '支付宝唯一id',
-    orderId         bigint comment '订单id',
-    totalAmount     float(10, 2)                       NOT NULL COMMENT '交易金额',
-    payStatus       int(0)                             NOT NULL DEFAULT 0 COMMENT '交易状态【0->未支付；1->已完成；2->支付失败】',
-    createTime      datetime default CURRENT_TIMESTAMP not null comment '支付时间',
-    updateTime      datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    isDelete        tinyint  default 0                 not null comment '是否删除'
-) comment '订单详情表' collate = utf8mb4_unicode_ci;
+    id             bigint auto_increment comment '任务id' primary key,
+    `name`         varchar(128)                       null comment '笔记名称',
+    textType       varchar(128)                       null comment '文本类型',
+    genTextContent text                               null comment '生成的文本内容',
+    userId         bigint                             null comment '创建用户Id',
+    `status`       varchar(128)                       not null default 'wait' comment 'wait,running,succeed,failed',
+    execMessage    text                               null comment '执行信息',
+    createTime     datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime     datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete       tinyint  default 0                 not null comment '是否删除'
+) comment '文本任务表' collate = utf8mb4_unicode_ci;
+
+-- 文本记录表
+create table if not exists text_record
+(
+    id             bigint auto_increment comment 'id' primary key,
+    textTaskId     bigint comment '文本任务id',
+    textContent    text                               null comment '文本内容',
+    genTextContent text                               null comment '生成的文本内容',
+    `status`       varchar(128)                       not null default 'wait' comment 'wait,running,succeed,failed',
+    execMessage    text                               null comment '执行信息',
+    createTime     datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime     datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete       tinyint  default 0                 not null comment '是否删除'
+) comment '文本记录表' collate = utf8mb4_unicode_ci;

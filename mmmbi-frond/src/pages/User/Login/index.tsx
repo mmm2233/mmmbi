@@ -1,51 +1,32 @@
-import { Footer } from '@/components';
+import Footer from '@/components/Footer';
 import {
   AlipayCircleOutlined,
   LockOutlined,
-  MobileOutlined,
   TaobaoCircleOutlined,
   UserOutlined,
   WeiboCircleOutlined,
 } from '@ant-design/icons';
 import {
   LoginForm,
-  ProFormCaptcha,
-  ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Helmet, Link, history, useModel } from '@umijs/max';
-import { Tabs, message } from 'antd';
-import { createStyles } from 'antd-style';
-import React, { useEffect, useState } from 'react';
-import { flushSync } from 'react-dom';
+import {useEmotionCss} from '@ant-design/use-emotion-css';
+
+import {Helmet, history, useModel} from '@umijs/max';
+import {message, Tabs} from 'antd';
+import React, {useState} from 'react';
+import {flushSync} from 'react-dom';
 import Settings from '../../../../config/defaultSettings';
-import { listChartByPageUsingPost } from '@/services/mmmbi/chartController';
-import { getLoginUserUsingGet, userLoginUsingPost } from '@/services/mmmbi/userController';
-const useStyles = createStyles(({ token }) => {
-  return {
-    action: {
-      marginLeft: '8px',
-      color: 'rgba(0, 0, 0, 0.2)',
-      fontSize: '24px',
-      verticalAlign: 'middle',
-      cursor: 'pointer',
-      transition: 'color 0.3s',
-      '&:hover': {
-        color: token.colorPrimaryActive,
-      },
-    },
-    lang: {
-      width: 42,
-      height: 42,
-      lineHeight: '42px',
-      position: 'fixed',
-      right: 16,
-      borderRadius: token.borderRadius,
-      ':hover': {
-        backgroundColor: token.colorBgTextHover,
-      },
-    },
-    container: {
+import {getLoginUserUsingGet, userLoginUsingPost} from "@/services/mmmbi/userController";
+import {Link} from "@umijs/renderer-react";
+
+
+const Login: React.FC = () => {
+  const [userLoginState, setUserLoginState] = useState<API.LoginUserVO>({});
+  const [type, setType] = useState<string>('account');
+  const {initialState, setInitialState} = useModel('@@initialState');
+  const containerClassName = useEmotionCss(() => {
+    return {
       display: 'flex',
       flexDirection: 'column',
       height: '100vh',
@@ -53,30 +34,18 @@ const useStyles = createStyles(({ token }) => {
       backgroundImage:
         "url('https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/V-_oS6r-i7wAAAAAAAAAAAAAFl94AQBr')",
       backgroundSize: '100% 100%',
-    },
-  };
-});
-
-const Login: React.FC = () => {
-  const [type, setType] = useState<string>('account');
-  const { setInitialState } = useModel('@@initialState');
-  const { styles } = useStyles();
-  useEffect(()=>{
-    listChartByPageUsingPost({}).then(res=>{
-      console.error('res',res)
-    })
-  })
-  /*
-  登录成功后，获取用户的登录信息
-  */
+    };
+  });
+  /**
+   * 获取登录信息
+   */
   const fetchUserInfo = async () => {
-    const userInfo = await getLoginUserUsingGet;
+    const userInfo = await getLoginUserUsingGet();
     if (userInfo) {
       flushSync(() => {
-        //setInitialState 设置全局登录状态
         setInitialState((s) => ({
           ...s,
-          currentUser: userInfo,
+          currentUser: userInfo.data,
         }));
       });
     }
@@ -91,8 +60,9 @@ const Login: React.FC = () => {
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
         history.push(urlParams.get('redirect') || '/');
+        
         return;
-      }else{
+      } else {
         message.error(res.message);
       }
     } catch (error) {
@@ -102,7 +72,7 @@ const Login: React.FC = () => {
     }
   };
   return (
-    <div className={styles.container}>
+    <div className={containerClassName}>
       <Helmet>
         <title>
           {'登录'}- {Settings.title}
@@ -119,9 +89,12 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
-          title="Ming 智能BI"
-          subTitle={'Ming 智能BI,wuwuwuw'}
+          logo={<img alt="logo" src="/logo.svg"/>}
+          title="智能 BI"
+          subTitle={'智能 BI 是吉世界开发的全栈项目'}
+          initialValues={{
+            autoLogin: true,
+          }}
           onFinish={async (values) => {
             await handleSubmit(values as API.UserLoginRequest);
           }}
@@ -137,20 +110,19 @@ const Login: React.FC = () => {
               },
             ]}
           />
-
           {type === 'account' && (
             <>
               <ProFormText
                 name="userAccount"
                 fieldProps={{
                   size: 'large',
-                  prefix: <UserOutlined />,
+                  prefix: <UserOutlined/>,
                 }}
-                placeholder={'请输入用户名'}
+                placeholder={'请输入账号'}
                 rules={[
                   {
                     required: true,
-                    message: '用户名是必填项！',
+                    message: '账号是必填项！',
                   },
                 ]}
               />
@@ -158,7 +130,7 @@ const Login: React.FC = () => {
                 name="userPassword"
                 fieldProps={{
                   size: 'large',
-                  prefix: <LockOutlined />,
+                  prefix: <LockOutlined/>,
                 }}
                 placeholder={'请输入密码'}
                 rules={[
@@ -170,22 +142,21 @@ const Login: React.FC = () => {
               />
             </>
           )}
-
           <div
             style={{
               marginBottom: 24,
             }}
           >
-            <Link
-              to="./user/register"
+            <a
             >
-              注册
-            </Link>
+              <Link to={'/user/register'}>新用户注册</Link>
+            </a>
           </div>
         </LoginForm>
       </div>
-      <Footer />
+      <Footer/>
     </div>
   );
 };
 export default Login;
+

@@ -9,32 +9,32 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 订单表
+ * 充值订单表
  * @TableName orders
  */
 @TableName(value ="orders")
 @Data
 public class Orders implements Serializable {
     /**
-     * id
+     * 订单id
      */
     @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
-     * 用户 id
+     * 支付宝交易凭证id
+     */
+    private String alipayTradeNo;
+
+    /**
+     * 用户id
      */
     private Long userId;
 
     /**
-     * 购买数量
+     * 交易名称
      */
-    private Long purchaseQuantity;
-
-    /**
-     * 单价
-     */
-    private Double price;
+    private String subject;
 
     /**
      * 交易金额
@@ -42,9 +42,14 @@ public class Orders implements Serializable {
     private Double totalAmount;
 
     /**
-     * 交易状态【0->待付款；1->已完成；2->无效订单,3->删除订单】
+     * unpaid,paying,succeed,failed
      */
-    private Integer orderStatus;
+    private String tradeStatus;
+
+    /**
+     * 支付宝买家id
+     */
+    private String buyerId;
 
     /**
      * 创建时间

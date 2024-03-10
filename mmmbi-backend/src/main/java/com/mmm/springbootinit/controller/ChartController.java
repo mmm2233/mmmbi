@@ -1,29 +1,21 @@
 package com.mmm.springbootinit.controller;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.db.PageResult;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mmm.springbootinit.annotation.AuthCheck;
-import com.mmm.springbootinit.bimq.BiMessageProducer;
-import com.mmm.springbootinit.bimq.BiMqConstant;
+import com.mmm.springbootinit.bimq.common.MqMessageProducer;
 import com.mmm.springbootinit.common.BaseResponse;
 import com.mmm.springbootinit.common.DeleteRequest;
 import com.mmm.springbootinit.common.ErrorCode;
 import com.mmm.springbootinit.common.ResultUtils;
-import com.mmm.springbootinit.constant.CommonConstant;
-import com.mmm.springbootinit.constant.CreditConstant;
-import com.mmm.springbootinit.constant.UserConstant;
+import com.mmm.springbootinit.constant.*;
 import com.mmm.springbootinit.exception.BusinessException;
 import com.mmm.springbootinit.exception.ThrowUtils;
-import com.mmm.springbootinit.manager.AIManager;
-import com.mmm.springbootinit.manager.CosManager;
+import com.mmm.springbootinit.manager.AiManager;
 import com.mmm.springbootinit.manager.RedisLimiterManager;
 import com.mmm.springbootinit.model.dto.chart.*;
 import com.mmm.springbootinit.model.entity.Chart;
-import com.mmm.springbootinit.model.entity.Credit;
 import com.mmm.springbootinit.model.entity.User;
-import com.mmm.springbootinit.model.enums.FileUploadBizEnum;
 import com.mmm.springbootinit.model.enums.FutureStatus;
 import com.mmm.springbootinit.model.vo.BiResponse;
 import com.mmm.springbootinit.model.vo.ChartVO;
@@ -31,27 +23,14 @@ import com.mmm.springbootinit.service.ChartService;
 import com.mmm.springbootinit.service.CreditService;
 import com.mmm.springbootinit.service.UserService;
 import com.mmm.springbootinit.utils.ExcelUtils;
-import com.mmm.springbootinit.utils.RedisUtils;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.redisson.api.RList;
-import org.redisson.api.RMap;
-import org.redisson.api.RedissonClient;
-import org.redisson.client.RedisClient;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.nio.channels.Channel;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -69,10 +48,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 public class ChartController {
 
-    private static final Long modeId = CommonConstant.modeId;
+    //todo 提出来
+    private static final Long modeId = GenConstant.MODE_CHART_ID;
 
     @Resource
-    private BiMessageProducer biMessageProducer;
+    private MqMessageProducer mqMessageProducer;
 
     @Resource
     private ChartService chartService;
@@ -81,7 +61,7 @@ public class ChartController {
     private UserService userService;
 
     @Resource
-    private AIManager aiManager;
+    private AiManager aiManager;
 
     @Resource
     private RedisLimiterManager redisLimiterManager;
@@ -114,7 +94,7 @@ public class ChartController {
         boolean result = chartService.save(chart);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         if (result){
-            biMessageProducer.sendMessageCache("刷新缓存");
+            mqMessageProducer.sendMessage(MqConstant.CACHE_EXCHANGE_NAME, MqConstant.CACHE_ROUTING_KEY,"刷新缓存");
         }
         long newChartId = chart.getId();
         return ResultUtils.success(newChartId);
@@ -143,7 +123,7 @@ public class ChartController {
         }
         boolean b = chartService.removeById(id);
         if (b){
-            biMessageProducer.sendMessageCache("刷新缓存");
+            mqMessageProducer.sendMessage(MqConstant.CACHE_EXCHANGE_NAME, MqConstant.CACHE_ROUTING_KEY,"刷新缓存");
         }
         return ResultUtils.success(b);
     }
@@ -170,7 +150,7 @@ public class ChartController {
         ThrowUtils.throwIf(oldChart == null, ErrorCode.NOT_FOUND_ERROR);
         boolean result = chartService.updateById(chart);
         if (result) {
-            biMessageProducer.sendMessageCache("刷新缓存");
+            mqMessageProducer.sendMessage(MqConstant.CACHE_EXCHANGE_NAME, MqConstant.CACHE_ROUTING_KEY,"刷新缓存");
         }
         return ResultUtils.success(result);
     }
@@ -285,7 +265,7 @@ public class ChartController {
         }
         boolean result = chartService.updateById(chart);
         if (result) {
-            biMessageProducer.sendMessageCache("刷新缓存");
+            mqMessageProducer.sendMessage(MqConstant.CACHE_EXCHANGE_NAME, MqConstant.CACHE_ROUTING_KEY,"刷新缓存");
         }
         return ResultUtils.success(result);
     }
@@ -324,7 +304,7 @@ public class ChartController {
         saveResult = chartService.save(chart);
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败！");
         if(saveResult){
-            biMessageProducer.sendMessageCache("刷新缓存");
+            mqMessageProducer.sendMessage(MqConstant.CACHE_EXCHANGE_NAME, MqConstant.CACHE_ROUTING_KEY,"刷新缓存");
         }
         BiResponse biResponse = new BiResponse();
         biResponse.setGenChart(genChart);
@@ -382,7 +362,7 @@ public class ChartController {
                 if (!updateResult) {
                     handleChartUpdateError(chart.getId(), "更新图表成功状态失败");
                 }else {
-                    biMessageProducer.sendMessageCache("刷新缓存");
+                    mqMessageProducer.sendMessage(MqConstant.CACHE_EXCHANGE_NAME, MqConstant.CACHE_ROUTING_KEY,"刷新缓存");
                 }
             }, threadPoolExecutor);
         } catch (RejectedExecutionException e) {
@@ -407,10 +387,11 @@ public class ChartController {
 
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败！");
         if (saveResult) {
-            biMessageProducer.sendMessageCache("刷新缓存");
+            mqMessageProducer.sendMessage(MqConstant.CACHE_EXCHANGE_NAME, MqConstant.CACHE_ROUTING_KEY,"刷新缓存");
         }
         long newChartId = chart.getId();
-        biMessageProducer.sendMessage(String.valueOf(newChartId));
+
+        mqMessageProducer.sendMessage(MqConstant.CHART_EXCHANGE_NAME,MqConstant.CHART_ROUTING_KEY,String.valueOf(newChartId));
 
         BiResponse biResponse = new BiResponse();
         biResponse.setChartId(chart.getId());

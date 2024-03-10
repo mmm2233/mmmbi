@@ -4,6 +4,16 @@ declare namespace API {
     name?: string;
   };
 
+  type AiResponse = {
+    resultId?: number;
+  };
+
+  type BaseResponseAiResponse_ = {
+    code?: number;
+    data?: AiResponse;
+    message?: string;
+  };
+
   type BaseResponseBiResponse_ = {
     code?: number;
     data?: BiResponse;
@@ -22,9 +32,9 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponseInt_ = {
+  type BaseResponseCredit_ = {
     code?: number;
-    data?: number;
+    data?: Credit;
     message?: string;
   };
 
@@ -52,15 +62,15 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponsePagePost_ = {
+  type BaseResponsePageCredit_ = {
     code?: number;
-    data?: PagePost_;
+    data?: PageCredit_;
     message?: string;
   };
 
-  type BaseResponsePagePostVO_ = {
+  type BaseResponsePageTextTask_ = {
     code?: number;
-    data?: PagePostVO_;
+    data?: PageTextTask_;
     message?: string;
   };
 
@@ -76,15 +86,21 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponsePostVO_ = {
-    code?: number;
-    data?: PostVO;
-    message?: string;
-  };
-
   type BaseResponseString_ = {
     code?: number;
     data?: string;
+    message?: string;
+  };
+
+  type BaseResponseTextTask_ = {
+    code?: number;
+    data?: TextTask;
+    message?: string;
+  };
+
+  type BaseResponseTextTaskVO_ = {
+    code?: number;
+    data?: TextTaskVO;
     message?: string;
   };
 
@@ -178,7 +194,58 @@ declare namespace API {
     userId?: number;
   };
 
+  type Credit = {
+    checkTime?: string;
+    createTime?: string;
+    creditTotal?: number;
+    id?: number;
+    isDelete?: number;
+    updateTime?: string;
+    userId?: number;
+  };
+
+  type CreditAddRequest = {
+    creditTotal?: number;
+    userId?: number;
+  };
+
+  type CreditEditRequest = {
+    creditTotal?: number;
+    id?: number;
+  };
+
+  type CreditQueryRequest = {
+    createTime?: string;
+    creditTotal?: number;
+    current?: number;
+    id?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    updateTime?: string;
+    userId?: number;
+  };
+
+  type CreditUpdateRequest = {
+    creditTotal?: number;
+    id?: number;
+  };
+
   type DeleteRequest = {
+    id?: number;
+  };
+
+  type genTextTaskAiUsingPOSTParams = {
+    name?: string;
+    textType?: string;
+  };
+
+  type genTextTaskAsyncAiMqUsingPOSTParams = {
+    name?: string;
+    textType?: string;
+  };
+
+  type genTextTaskAsyncAiRebuildUsingPOSTParams = {
     id?: number;
   };
 
@@ -205,7 +272,17 @@ declare namespace API {
     id?: number;
   };
 
-  type getPostVOByIdUsingGETParams = {
+  type getCreditByIdUsingGETParams = {
+    /** id */
+    id?: number;
+  };
+
+  type getTextTaskByIdUsingGETParams = {
+    /** id */
+    id?: number;
+  };
+
+  type getTextTaskVOByIdUsingGETParams = {
     /** id */
     id?: number;
   };
@@ -261,27 +338,27 @@ declare namespace API {
     total?: number;
   };
 
-  type PagePost_ = {
+  type PageCredit_ = {
     countId?: string;
     current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
     pages?: number;
-    records?: Post[];
+    records?: Credit[];
     searchCount?: boolean;
     size?: number;
     total?: number;
   };
 
-  type PagePostVO_ = {
+  type PageTextTask_ = {
     countId?: string;
     current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
     pages?: number;
-    records?: PostVO[];
+    records?: TextTask[];
     searchCount?: boolean;
     size?: number;
     total?: number;
@@ -313,85 +390,64 @@ declare namespace API {
     total?: number;
   };
 
-  type Post = {
-    content?: string;
+  type payUsingGETParams = {
+    subject?: string;
+    totalAmount?: number;
+  };
+
+  type TextAddRequest = true;
+
+  type TextEditRequest = {
+    genTextContent?: string;
+    id?: number;
+    name?: string;
+    status?: string;
+    textType?: string;
+    userId?: number;
+  };
+
+  type TextTask = {
     createTime?: string;
-    favourNum?: number;
+    execMessage?: string;
+    genTextContent?: string;
     id?: number;
     isDelete?: number;
-    tags?: string;
-    thumbNum?: number;
-    title?: string;
+    name?: string;
+    status?: string;
+    textType?: string;
     updateTime?: string;
     userId?: number;
   };
 
-  type PostAddRequest = {
-    content?: string;
-    tags?: string[];
-    title?: string;
-  };
-
-  type PostEditRequest = {
-    content?: string;
-    id?: number;
-    tags?: string[];
-    title?: string;
-  };
-
-  type PostFavourAddRequest = {
-    postId?: number;
-  };
-
-  type PostFavourQueryRequest = {
+  type TextTaskQueryRequest = {
     current?: number;
+    genTextContent?: string;
+    id?: number;
+    name?: string;
     pageSize?: number;
-    postQueryRequest?: PostQueryRequest;
     sortField?: string;
     sortOrder?: string;
+    status?: string;
+    textType?: string;
     userId?: number;
   };
 
-  type PostQueryRequest = {
-    content?: string;
-    current?: number;
-    favourUserId?: number;
-    id?: number;
-    notId?: number;
-    orTags?: string[];
-    pageSize?: number;
-    searchText?: string;
-    sortField?: string;
-    sortOrder?: string;
-    tags?: string[];
-    title?: string;
-    userId?: number;
-  };
-
-  type PostThumbAddRequest = {
-    postId?: number;
-  };
-
-  type PostUpdateRequest = {
-    content?: string;
-    id?: number;
-    tags?: string[];
-    title?: string;
-  };
-
-  type PostVO = {
-    content?: string;
+  type TextTaskVO = {
     createTime?: string;
-    favourNum?: number;
-    hasFavour?: boolean;
-    hasThumb?: boolean;
+    genTextContent?: string;
     id?: number;
-    tagList?: string[];
-    thumbNum?: number;
-    title?: string;
-    updateTime?: string;
-    user?: UserVO;
-    userId?: number;
+    name?: string;
+    status?: string;
+    textType?: string;
+  };
+
+  type TextUpdateRequest = {
+    execMessage?: string;
+    genTextContent?: string;
+    id?: number;
+    name?: string;
+    status?: string;
+    textType?: string;
   };
 
   type uploadFileUsingPOSTParams = {

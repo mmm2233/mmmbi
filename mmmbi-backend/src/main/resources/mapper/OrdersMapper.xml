@@ -6,19 +6,20 @@
 
     <resultMap id="BaseResultMap" type="com.mmm.springbootinit.model.entity.Orders">
             <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="alipayTradeNo" column="alipayTradeNo" jdbcType="VARCHAR"/>
+            <result property="subject" column="subject" jdbcType="VARCHAR"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
-            <result property="purchaseQuantity" column="purchaseQuantity" jdbcType="BIGINT"/>
-            <result property="price" column="price" jdbcType="FLOAT"/>
-            <result property="totalAmount" column="totalAmount" jdbcType="FLOAT"/>
-            <result property="orderStatus" column="orderStatus" jdbcType="INTEGER"/>
+            <result property="totalAmount" column="totalAmount" jdbcType="DOUBLE"/>
+            <result property="tradeStatus" column="tradeStatus" jdbcType="VARCHAR"/>
+            <result property="buyerId" column="buyerId" jdbcType="VARCHAR"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,userId,purchaseQuantity,
-        price,totalAmount,orderStatus,
+        id,alipayTradeNo,userId,`subject`,
+        totalAmount,tradeStatus,buyerId,
         createTime,updateTime,isDelete
     </sql>
 </mapper>

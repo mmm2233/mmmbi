@@ -5,20 +5,28 @@
 <mapper namespace="com.mmm.springbootinit.mapper.ChartMapper">
 
     <resultMap id="BaseResultMap" type="com.mmm.springbootinit.model.entity.Chart">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="goal" column="goal" jdbcType="VARCHAR"/>
-            <result property="chartData" column="chartData" jdbcType="VARCHAR"/>
-            <result property="chartType" column="chartType" jdbcType="VARCHAR"/>
-            <result property="genResult" column="genResult" jdbcType="VARCHAR"/>
-            <result property="userId" column="userId" jdbcType="BIGINT"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
-            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="chartName" column="name" jdbcType="VARCHAR"/>
+        <result property="goal" column="goal" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="execMessage" column="execMessage" jdbcType="VARCHAR"/>
+        <result property="chartData" column="chartData" jdbcType="VARCHAR"/>
+        <result property="chartType" column="chatType" jdbcType="VARCHAR"/>
+        <result property="genChart" column="genChat" jdbcType="VARCHAR"/>
+        <result property="genResult" column="genResult" jdbcType="VARCHAR"/>
+        <result property="userId" column="userId" jdbcType="BIGINT"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,goal,chartName,chartData,
-        chartType,genChart,genResult,userId,
-        createTime,updateTime,isDelete,status,execMessage
+        id,chartName,goal,chartData,
+        chartType,genChart,genResult,
+        userId,`status`,execMessage,createTime,updateTime,
+        isDelete
     </sql>
+    <select id="queryChartData" parameterType="string" resultType="map">
+        ${querySql}
+    </select>
 </mapper>
