@@ -27,7 +27,6 @@ create table if not exists chart
     chartName      varchar(128) null  comment '图表名称',
     chartData    text                              not null comment '图表数据',
     chartType       varchar(128)                     not null comment '图表类型',
-    genResult   text                     null comment '生成分析结果',
     status varchar(128) not null default 'wait'  comment 'wait,running,succeed,failed',
     execMessage text null comment '执行信息',
     userId  bigint      default 0                 not null comment '创建用户id',
@@ -91,3 +90,58 @@ create table if not exists text_record
     updateTime     datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     isDelete       tinyint  default 0                 not null comment '是否删除'
 ) comment '文本记录表' collate = utf8mb4_unicode_ci;
+
+-- 图片分析表
+create table if not exists image
+(
+    id         bigint auto_increment comment 'id' primary key,
+    goal       text null comment '分析目标',
+    imageType  varchar(512) null comment '图片类型',
+    baseString varchar(2048) null comment  '图表base64编码',
+    state varchar(256) null comment '图片分析状态',
+    execMessage varchar(256) null  comment '执行信息',
+    genResult  text null comment  '生成的分析结论',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete   tinyint  default 0                 not null comment '是否删除'
+) comment '图片分析表' collate = utf8mb4_unicode_ci;
+
+
+-- 分析图表表
+create table if not exists chart_logs
+(
+    id         bigint auto_increment comment 'id' primary key,
+    chartId bigint not null comment '图表id',
+    genResult   text                     null comment '生成分析结果',
+    userId  bigint      default 0                 not null comment '创建用户id',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    isDelete   tinyint  default 0                 not null comment '是否删除'
+) comment '图表' collate = utf8mb4_unicode_ci;
+
+
+create table if not exists points
+(
+    id         bigint auto_increment comment 'id' primary key,
+    userId     bigint                             null comment '创建用户Id',
+    remainingPoints bigint default 0 not null comment '剩余积分数量',
+    totalPoints bigint default 0 not null comment '总积分数量',
+    creditTotal bigint null  comment '总积分' default 0,
+    status tinyint default 1 not null comment '积分状态，有效1无效0',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete   tinyint  default 0                 not null comment '是否删除'
+) comment '积分表' collate = utf8mb4_unicode_ci;
+
+create table if not exists point_changes
+(
+    id         bigint auto_increment comment 'id' primary key,
+    userId     bigint                             null comment '创建用户Id',
+    changeAmount bigint not null comment '积分变动值',
+    changeType bigint not null comment '积分变动类型',
+    reason varchar(256) null  comment '积分变动原因',
+    newPoints bigint  comment '积分变动后数量',
+    source varchar(256) null  comment '积分来源',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    isDelete   tinyint  default 0                 not null comment '是否删除'
+) comment '积分表' collate = utf8mb4_unicode_ci;
+

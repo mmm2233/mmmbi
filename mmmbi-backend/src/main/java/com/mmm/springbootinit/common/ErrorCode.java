@@ -10,6 +10,7 @@ public enum ErrorCode {
 
     SUCCESS(0, "ok"),
     PARAMS_ERROR(40000, "请求参数错误"),
+    POINTS_NE(20000, "积分不足"),
     NOT_LOGIN_ERROR(40100, "未登录"),
     NO_AUTH_ERROR(40101, "无权限"),
     TOO_MANY_REQUEST(42900,"请求过于频繁"),

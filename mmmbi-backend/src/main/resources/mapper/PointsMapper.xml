@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mmm.springbootinit.mapper.PointsMapper">
+
+    <resultMap id="BaseResultMap" type="com.mmm.springbootinit.model.entity.Points">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="remainingPoints" column="remainingPoints" jdbcType="BIGINT"/>
+            <result property="totalPoints" column="totalPoints" jdbcType="BIGINT"/>
+            <result property="creditTotal" column="creditTotal" jdbcType="BIGINT"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,userId,remainingPoints,
+        totalPoints,creditTotal,status,
+        createTime,updateTime,isDelete
+    </sql>
+</mapper>

@@ -2,19 +2,19 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mmm.springbootinit.mapper.CreditMapper">
+<mapper namespace="com.mmm.springbootinit.mapper.ChartLogsMapper">
 
-    <resultMap id="BaseResultMap" type="com.mmm.springbootinit.model.entity.Credit">
+    <resultMap id="BaseResultMap" type="com.mmm.springbootinit.model.entity.ChartLogs">
             <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="chartId" column="chartId" jdbcType="BIGINT"/>
+            <result property="genResult" column="genResult" jdbcType="VARCHAR"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
-            <result property="creditTotal" column="creditTotal" jdbcType="BIGINT"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,userId,creditTotal,
-        createTime,updateTime,isDelete
+        id,chartId,genResult,
+        userId,createTime,isDelete
     </sql>
 </mapper>

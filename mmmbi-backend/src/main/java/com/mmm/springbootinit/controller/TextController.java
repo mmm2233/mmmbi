@@ -25,7 +25,6 @@ import com.mmm.springbootinit.model.entity.TextTask;
 import com.mmm.springbootinit.model.entity.User;
 import com.mmm.springbootinit.model.vo.AiResponse;
 import com.mmm.springbootinit.model.vo.TextTaskVO;
-import com.mmm.springbootinit.service.CreditService;
 import com.mmm.springbootinit.service.TextRecordService;
 import com.mmm.springbootinit.service.TextTaskService;
 import com.mmm.springbootinit.service.UserService;
@@ -63,10 +62,13 @@ public class TextController {
 
     @Resource
     private RedisLimiterManager redisLimiterManager;
+
     @Resource
     private AiManager aiManager;
-    @Resource
-    private CreditService creditService;
+
+//    @Resource
+//    private CreditService creditService;
+
     @Resource
     ThreadPoolExecutor threadPoolExecutor;
 

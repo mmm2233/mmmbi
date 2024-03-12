@@ -8,6 +8,12 @@ declare namespace API {
     resultId?: number;
   };
 
+  type BaseResponse = {
+    code?: number;
+    data?: Record<string, any>;
+    message?: string;
+  };
+
   type BaseResponseAiResponse_ = {
     code?: number;
     data?: AiResponse;
@@ -26,9 +32,9 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponseChartVO_ = {
+  type BaseResponseChartGen_ = {
     code?: number;
-    data?: ChartVO;
+    data?: ChartGen;
     message?: string;
   };
 
@@ -50,21 +56,27 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponsePageChart_ = {
+  type BaseResponsePage_ = {
     code?: number;
-    data?: PageChart_;
+    data?: Page;
     message?: string;
   };
 
-  type BaseResponsePageChartVO_ = {
+  type BaseResponsePageChartGen_ = {
     code?: number;
-    data?: PageChartVO_;
+    data?: PageChartGen_;
     message?: string;
   };
 
   type BaseResponsePageCredit_ = {
     code?: number;
     data?: PageCredit_;
+    message?: string;
+  };
+
+  type BaseResponsePagePointChanges_ = {
+    code?: number;
+    data?: PagePointChanges_;
     message?: string;
   };
 
@@ -122,22 +134,6 @@ declare namespace API {
     genResult?: string;
   };
 
-  type Chart = {
-    chartData?: string;
-    chartName?: string;
-    chartType?: string;
-    createTime?: string;
-    execMessage?: string;
-    genChart?: string;
-    genResult?: string;
-    goal?: string;
-    id?: number;
-    isDelete?: number;
-    status?: string;
-    updateTime?: string;
-    userId?: number;
-  };
-
   type ChartAddRequest = {
     chartData?: string;
     chartName?: string;
@@ -151,6 +147,21 @@ declare namespace API {
     chartType?: string;
     goal?: string;
     id?: number;
+  };
+
+  type ChartGen = {
+    chartId?: number;
+    chartType?: string;
+    createTime?: string;
+    execMessage?: string;
+    genChart?: string;
+    genResult?: string;
+    goal?: string;
+    id?: string;
+    name?: string;
+    status?: string;
+    userId?: number;
+    version?: number;
   };
 
   type ChartQueryRequest = {
@@ -175,22 +186,6 @@ declare namespace API {
     goal?: string;
     id?: number;
     updateTime?: string;
-    userId?: number;
-  };
-
-  type ChartVO = {
-    chartData?: string;
-    chartName?: string;
-    chartType?: string;
-    createTime?: string;
-    execMessage?: string;
-    genChart?: string;
-    genResult?: string;
-    goal?: string;
-    id?: number;
-    status?: string;
-    updateTime?: string;
-    user?: UserVO;
     userId?: number;
   };
 
@@ -231,8 +226,19 @@ declare namespace API {
     id?: number;
   };
 
+  type DeleteChartDocRequest = {
+    id?: number;
+    version?: number;
+  };
+
   type DeleteRequest = {
     id?: number;
+  };
+
+  type genChartByAiUsingPOSTParams = {
+    chartName?: string;
+    chartType?: string;
+    goal?: string;
   };
 
   type genTextTaskAiUsingPOSTParams = {
@@ -249,25 +255,7 @@ declare namespace API {
     id?: number;
   };
 
-  type getChartByAIAsyncMqUsingPOSTParams = {
-    chartName?: string;
-    chartType?: string;
-    goal?: string;
-  };
-
-  type getChartByAIAsyncUsingPOSTParams = {
-    chartName?: string;
-    chartType?: string;
-    goal?: string;
-  };
-
-  type getChartByAIUsingPOSTParams = {
-    chartName?: string;
-    chartType?: string;
-    goal?: string;
-  };
-
-  type getChartVOByIdUsingGETParams = {
+  type getChartEntityByIdUsingGETParams = {
     /** id */
     id?: number;
   };
@@ -312,30 +300,40 @@ declare namespace API {
     column?: string;
   };
 
-  type PageChart_ = {
+  type Page = {
     countId?: string;
     current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
     pages?: number;
-    records?: Chart[];
+    records?: Record<string, any>[];
     searchCount?: boolean;
     size?: number;
     total?: number;
   };
 
-  type PageChartVO_ = {
-    countId?: string;
-    current?: number;
-    maxLimit?: number;
-    optimizeCountSql?: boolean;
-    orders?: OrderItem[];
-    pages?: number;
-    records?: ChartVO[];
-    searchCount?: boolean;
+  type Pageable = {
+    offset?: number;
+    pageNumber?: number;
+    pageSize?: number;
+    paged?: boolean;
+    sort?: Sort;
+    unpaged?: boolean;
+  };
+
+  type PageChartGen_ = {
+    content?: ChartGen[];
+    empty?: boolean;
+    first?: boolean;
+    last?: boolean;
+    number?: number;
+    numberOfElements?: number;
+    pageable?: Pageable;
     size?: number;
-    total?: number;
+    sort?: Sort;
+    totalElements?: number;
+    totalPages?: number;
   };
 
   type PageCredit_ = {
@@ -349,6 +347,26 @@ declare namespace API {
     searchCount?: boolean;
     size?: number;
     total?: number;
+  };
+
+  type PagePointChanges_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: PointChanges[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type PageRequest = {
+    current?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
   };
 
   type PageTextTask_ = {
@@ -393,6 +411,29 @@ declare namespace API {
   type payUsingGETParams = {
     subject?: string;
     totalAmount?: number;
+  };
+
+  type PointChanges = {
+    changeAmount?: number;
+    changeType?: number;
+    createTime?: string;
+    id?: number;
+    isDelete?: number;
+    newPoints?: number;
+    reason?: string;
+    source?: string;
+    userId?: number;
+  };
+
+  type regenerateChartUsingGETParams = {
+    /** chartId */
+    chartId: number;
+  };
+
+  type Sort = {
+    empty?: boolean;
+    sorted?: boolean;
+    unsorted?: boolean;
   };
 
   type TextAddRequest = true;
@@ -452,6 +493,11 @@ declare namespace API {
 
   type uploadFileUsingPOSTParams = {
     biz?: string;
+  };
+
+  type uploadImageAnalysisUsingPOSTParams = {
+    biz?: string;
+    goal?: string;
   };
 
   type User = {

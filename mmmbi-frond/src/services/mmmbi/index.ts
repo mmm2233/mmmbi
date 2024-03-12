@@ -6,6 +6,8 @@ import * as aliPayController from './aliPayController';
 import * as chartController from './chartController';
 import * as creditController from './creditController';
 import * as fileController from './fileController';
+import * as imageController from './imageController';
+import * as pointController from './pointController';
 import * as queueController from './queueController';
 import * as textController from './textController';
 import * as userController from './userController';
@@ -14,6 +16,8 @@ export default {
   chartController,
   creditController,
   fileController,
+  pointController,
+  imageController,
   queueController,
   textController,
   userController,

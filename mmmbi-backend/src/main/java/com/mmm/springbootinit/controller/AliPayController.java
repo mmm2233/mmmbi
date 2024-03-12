@@ -14,7 +14,6 @@ import com.mmm.springbootinit.exception.ThrowUtils;
 import com.mmm.springbootinit.model.dto.order.OrderAddRequest;
 import com.mmm.springbootinit.model.entity.Orders;
 import com.mmm.springbootinit.model.entity.User;
-import com.mmm.springbootinit.service.CreditService;
 import com.mmm.springbootinit.service.OrdersService;
 import com.mmm.springbootinit.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,8 +54,6 @@ public class AliPayController {
     @Resource
     private OrdersService ordersService;
 
-    @Resource
-    private CreditService creditService;
 
     @Resource
     private UserService userService;
@@ -145,7 +142,7 @@ public class AliPayController {
                 boolean result = ordersService.updateById(orders);
                 ThrowUtils.throwIf(!result, ErrorCode.SYSTEM_ERROR,"订单更新错误");
                 //根据充值金额增加积分
-                result = creditService.consumeCredits(orders.getUserId(), 100L * totalAmount);
+                //result = creditService.consumeCredits(orders.getUserId(), 100L * totalAmount);
                 ThrowUtils.throwIf(!result, ErrorCode.SYSTEM_ERROR,"积分更新错误");
             }
         }

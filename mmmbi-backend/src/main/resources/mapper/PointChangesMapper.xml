@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mmm.springbootinit.mapper.PointChangesMapper">
+
+    <resultMap id="BaseResultMap" type="com.mmm.springbootinit.model.entity.PointChanges">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="changeAmount" column="changeAmount" jdbcType="BIGINT"/>
+            <result property="changeType" column="changeType" jdbcType="BIGINT"/>
+            <result property="reason" column="reason" jdbcType="VARCHAR"/>
+            <result property="newPoints" column="newPoints" jdbcType="BIGINT"/>
+            <result property="source" column="source" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,userId,changeAmount,
+        changeType,reason,newPoints,
+        source,createTime,isDelete
+    </sql>
+</mapper>

@@ -22,6 +22,13 @@ export default [
     {path: '/my_result/my_md',name: '我的文本', component: './My/MyText'},
   ]},
 
+  {path: '/analysis', name: '智能分析结果', icon: 'barChart',
+  hideChildrenInMenu: false,
+  routes: [
+    {path: '/analysis/image',name: '我的图表', component: './Analysis/AddImage'},
+    {path: '/analysis/text',name: '我的文本', component: './Analysis/TextAnalysis'},
+  ]},
+
   {path: '/user/edit',name: '我的信息', icon: 'user',component: './User/UserEdit'},
   {
     path: '/user',

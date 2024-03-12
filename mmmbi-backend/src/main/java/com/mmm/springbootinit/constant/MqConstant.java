@@ -60,4 +60,17 @@ public interface MqConstant {
     String CACHE_DEAD_QUEUE_NAME="cache_dead_queue";
 
     String CACHE_DEAD_ROUTING_KEY="cache_dead_routingKey";
+
+    //积分补偿
+//    String CACHE_EXCHANGE_NAME = "cache_exchange";
+//
+//    String CACHE_QUEUE_NAME = "cache_queue";
+//
+//    String CACHE_ROUTING_KEY = "cache_routingKey";
+//
+//    String CACHE_DEAD_EXCHANGE_NAME="cache_dead_exchange";
+//
+//    String CACHE_DEAD_QUEUE_NAME="cache_dead_queue";
+//
+//    String CACHE_DEAD_ROUTING_KEY="cache_dead_routingKey";
 }

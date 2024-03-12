@@ -4,18 +4,17 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
+import lombok.Data;
 
 /**
- * 积分表
- * @TableName credit
+ * 图表
+ * @TableName chart_logs
  */
-@TableName(value ="credit")
+@TableName(value ="chart_logs")
 @Data
-public class Credit implements Serializable {
+public class ChartLogs implements Serializable {
     /**
      * id
      */
@@ -23,29 +22,24 @@ public class Credit implements Serializable {
     private Long id;
 
     /**
-     * 创建用户Id
+     * 图表id
      */
-    private Long userId;
+    private Long chartId;
 
     /**
-     * 总积分
+     * 生成分析结果
      */
-    private Long creditTotal;
+    private String genResult;
 
-    /*
-        签到时间
+    /**
+     * 创建用户id
      */
-    private Date checkTime;
+    private Long userId;
 
     /**
      * 创建时间
      */
     private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
 
     /**
      * 是否删除

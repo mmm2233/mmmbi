@@ -11,7 +11,6 @@ import com.mmm.springbootinit.model.dto.text.GenTextTaskByAiRequest;
 import com.mmm.springbootinit.model.entity.TextRecord;
 import com.mmm.springbootinit.model.entity.TextTask;
 import com.mmm.springbootinit.model.entity.User;
-import com.mmm.springbootinit.service.CreditService;
 import com.mmm.springbootinit.service.TextRecordService;
 import com.mmm.springbootinit.service.TextTaskService;
 import com.mmm.springbootinit.mapper.TextTaskMapper;
@@ -32,8 +31,6 @@ import java.util.List;
 public class TextTaskServiceImpl extends ServiceImpl<TextTaskMapper, TextTask>
     implements TextTaskService{
 
-    @Resource
-    private CreditService creditService;
 
     @Resource
     private TextRecordService textRecordService;
@@ -58,8 +55,8 @@ public class TextTaskServiceImpl extends ServiceImpl<TextTaskMapper, TextTask>
         ThrowUtils.throwIf(!validFileSuffix.contains(suffix),ErrorCode.PARAMS_ERROR,"文件后缀名非法");
 
         //消耗积分
-        Boolean creditResult = creditService.consumeCredits(loginUser.getId(), CreditConstant.CREDIT_TEXT_SUCCESS);
-        ThrowUtils.throwIf(!creditResult,ErrorCode.OPERATION_ERROR,"你的积分不足");
+        //Boolean creditResult = creditService.consumeCredits(loginUser.getId(), CreditConstant.CREDIT_TEXT_SUCCESS);
+        //ThrowUtils.throwIf(!creditResult,ErrorCode.OPERATION_ERROR,"你的积分不足");
 
         //保存数据库 wait
         //保存任务进数据库

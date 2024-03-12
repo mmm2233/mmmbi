@@ -6,7 +6,6 @@ import com.mmm.springbootinit.common.BaseResponse;
 import com.mmm.springbootinit.common.DeleteRequest;
 import com.mmm.springbootinit.common.ErrorCode;
 import com.mmm.springbootinit.common.ResultUtils;
-import com.mmm.springbootinit.config.WxOpenConfig;
 import com.mmm.springbootinit.constant.UserConstant;
 import com.mmm.springbootinit.exception.BusinessException;
 import com.mmm.springbootinit.exception.ThrowUtils;
@@ -16,22 +15,16 @@ import com.mmm.springbootinit.model.dto.user.UserQueryRequest;
 import com.mmm.springbootinit.model.dto.user.UserRegisterRequest;
 import com.mmm.springbootinit.model.dto.user.UserUpdateMyRequest;
 import com.mmm.springbootinit.model.dto.user.UserUpdateRequest;
-import com.mmm.springbootinit.model.entity.Credit;
 import com.mmm.springbootinit.model.entity.User;
 import com.mmm.springbootinit.model.vo.LoginUserVO;
 import com.mmm.springbootinit.model.vo.UserVO;
-import com.mmm.springbootinit.service.CreditService;
 import com.mmm.springbootinit.service.UserService;
 
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
-import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
-import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +33,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.mmm.springbootinit.service.impl.UserServiceImpl.SALT;
@@ -59,8 +51,8 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @Resource
-    private CreditService creditService;
+//    @Resource
+//    private CreditService creditService;
 
     // region 登录相关
 
@@ -158,12 +150,6 @@ public class UserController {
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + defaultPassword).getBytes());
         user.setUserPassword(encryptPassword);
         boolean result = userService.save(user);
-
-        Credit credit = new Credit();
-        Long userId = user.getId();
-        credit.setUserId(userId);
-        boolean save = creditService.save(credit);
-        ThrowUtils.throwIf(!save,ErrorCode.SYSTEM_ERROR,"注册失败，数据库错误");
 
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(user.getId());
