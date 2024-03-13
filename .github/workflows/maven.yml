@@ -47,6 +47,5 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.sha }} # 用于标记容器版本号
         run: |
-          docker build -t registry.cn-hangzhou.aliyuncs.com/mingbi/mmmbi:$IMAGE_TAG -f ./mmmbi-backend/Dockerfile  .
-	  #docker tag m1 registry.cn-hangzhou.aliyuncs.com/mingbi/mmmbi:$IMAGE_TAG
+          docker build -t registry.cn-hangzhou.aliyuncs.com/mingbi/mmmbi:$IMAGE_TAG -f ./mmmbi-backend/Dockerfile .
           docker push registry.cn-hangzhou.aliyuncs.com/mingbi/mmmbi:$IMAGE_TAG
