@@ -35,18 +35,6 @@ create table if not exists chart
     isDelete   tinyint  default 0                 not null comment '是否删除'
 ) comment '图表' collate = utf8mb4_unicode_ci;
 
-
-create table if not exists credit
-(
-    id         bigint auto_increment comment 'id' primary key,
-    userId     bigint                             null comment '创建用户Id',
-    checkTime datetime null comment '签到时间',
-    creditTotal bigint null  comment '总积分' default 0,
-    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    isDelete   tinyint  default 0                 not null comment '是否删除'
-) comment '积分表' collate = utf8mb4_unicode_ci;
-
 -- 充值订单表
 create table if not exists orders
 (

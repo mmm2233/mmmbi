@@ -4,7 +4,6 @@
 // API 唯一标识：
 import * as aliPayController from './aliPayController';
 import * as chartController from './chartController';
-import * as creditController from './creditController';
 import * as fileController from './fileController';
 import * as imageController from './imageController';
 import * as pointController from './pointController';
@@ -14,10 +13,9 @@ import * as userController from './userController';
 export default {
   aliPayController,
   chartController,
-  creditController,
   fileController,
-  pointController,
   imageController,
+  pointController,
   queueController,
   textController,
   userController,

@@ -38,12 +38,6 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponseCredit_ = {
-    code?: number;
-    data?: Credit;
-    message?: string;
-  };
-
   type BaseResponseLoginUserVO_ = {
     code?: number;
     data?: LoginUserVO;
@@ -68,12 +62,6 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponsePageCredit_ = {
-    code?: number;
-    data?: PageCredit_;
-    message?: string;
-  };
-
   type BaseResponsePagePointChanges_ = {
     code?: number;
     data?: PagePointChanges_;
@@ -95,6 +83,12 @@ declare namespace API {
   type BaseResponsePageUserVO_ = {
     code?: number;
     data?: PageUserVO_;
+    message?: string;
+  };
+
+  type BaseResponsePoints_ = {
+    code?: number;
+    data?: Points;
     message?: string;
   };
 
@@ -189,41 +183,9 @@ declare namespace API {
     userId?: number;
   };
 
-  type Credit = {
-    checkTime?: string;
-    createTime?: string;
-    creditTotal?: number;
-    id?: number;
-    isDelete?: number;
-    updateTime?: string;
+  type czPointUsingPOSTParams = {
+    amount?: number;
     userId?: number;
-  };
-
-  type CreditAddRequest = {
-    creditTotal?: number;
-    userId?: number;
-  };
-
-  type CreditEditRequest = {
-    creditTotal?: number;
-    id?: number;
-  };
-
-  type CreditQueryRequest = {
-    createTime?: string;
-    creditTotal?: number;
-    current?: number;
-    id?: number;
-    pageSize?: number;
-    sortField?: string;
-    sortOrder?: string;
-    updateTime?: string;
-    userId?: number;
-  };
-
-  type CreditUpdateRequest = {
-    creditTotal?: number;
-    id?: number;
   };
 
   type DeleteChartDocRequest = {
@@ -260,11 +222,6 @@ declare namespace API {
     id?: number;
   };
 
-  type getCreditByIdUsingGETParams = {
-    /** id */
-    id?: number;
-  };
-
   type getTextTaskByIdUsingGETParams = {
     /** id */
     id?: number;
@@ -278,6 +235,11 @@ declare namespace API {
   type getUserByIdUsingGETParams = {
     /** id */
     id?: number;
+  };
+
+  type getUserPointUsingGETParams = {
+    /** userId */
+    userId?: number;
   };
 
   type getUserVOByIdUsingGETParams = {
@@ -334,19 +296,6 @@ declare namespace API {
     sort?: Sort;
     totalElements?: number;
     totalPages?: number;
-  };
-
-  type PageCredit_ = {
-    countId?: string;
-    current?: number;
-    maxLimit?: number;
-    optimizeCountSql?: boolean;
-    orders?: OrderItem[];
-    pages?: number;
-    records?: Credit[];
-    searchCount?: boolean;
-    size?: number;
-    total?: number;
   };
 
   type PagePointChanges_ = {
@@ -422,6 +371,18 @@ declare namespace API {
     newPoints?: number;
     reason?: string;
     source?: string;
+    userId?: number;
+  };
+
+  type Points = {
+    createTime?: string;
+    creditTotal?: number;
+    id?: number;
+    isDelete?: number;
+    remainingPoints?: number;
+    status?: number;
+    totalPoints?: number;
+    updateTime?: string;
     userId?: number;
   };
 

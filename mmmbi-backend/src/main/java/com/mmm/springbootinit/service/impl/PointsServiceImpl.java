@@ -2,18 +2,25 @@ package com.mmm.springbootinit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mmm.springbootinit.common.BaseResponse;
 import com.mmm.springbootinit.common.ErrorCode;
+import com.mmm.springbootinit.common.ResultUtils;
+import com.mmm.springbootinit.exception.BusinessException;
 import com.mmm.springbootinit.exception.ThrowUtils;
+import com.mmm.springbootinit.model.dto.points.CzUpdateRequest;
 import com.mmm.springbootinit.model.entity.PointChanges;
 import com.mmm.springbootinit.model.entity.Points;
+import com.mmm.springbootinit.model.entity.User;
 import com.mmm.springbootinit.model.enums.PointChangeEnum;
 import com.mmm.springbootinit.service.PointChangesService;
 import com.mmm.springbootinit.service.PointsService;
 import com.mmm.springbootinit.mapper.PointsMapper;
+import com.mmm.springbootinit.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -23,6 +30,9 @@ import java.util.Date;
 @Service
 public class PointsServiceImpl extends ServiceImpl<PointsMapper, Points>
     implements PointsService{
+
+    @Resource
+    UserService userService;
 
     @Resource
     PointChangesService pointChangeService;
@@ -59,6 +69,29 @@ public class PointsServiceImpl extends ServiceImpl<PointsMapper, Points>
     @Override
     public boolean compensatePoint(Long userId, PointChangeEnum pointChangeEnum) {
         return operatePointAndSave(userId, pointChangeEnum);
+    }
+
+    @Override
+    public BaseResponse<Points> getUserPoint(Long userId, HttpServletRequest request) {
+        if (userId == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        QueryWrapper<Points> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId",loginUser.getId());
+        Points points = getOne(queryWrapper);
+        return ResultUtils.success(points);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean czPoint(CzUpdateRequest czUpdateRequest, HttpServletRequest request) {
+        if (czUpdateRequest.getUserId() == null || czUpdateRequest.getAmount() == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        PointChangeEnum czAlipayAdd = PointChangeEnum.CZ_ALIPAY_ADD;
+        czAlipayAdd.setChangeAmount(czUpdateRequest.getAmount());
+        return operatePointAndSave(czUpdateRequest.getUserId(), czAlipayAdd);
     }
 
     @Override

@@ -1,8 +1,12 @@
 package com.mmm.springbootinit.service;
 
+import com.mmm.springbootinit.common.BaseResponse;
+import com.mmm.springbootinit.model.dto.points.CzUpdateRequest;
 import com.mmm.springbootinit.model.entity.Points;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.mmm.springbootinit.model.enums.PointChangeEnum;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -41,6 +45,18 @@ public interface PointsService extends IService<Points> {
      * @return boolean
      */
     boolean compensatePoint(Long userId, PointChangeEnum pointChangeEnum);
+
+    /**
+     * 获取用户积分
+     *
+     * @param userId 用户id
+     */
+    BaseResponse<Points> getUserPoint(Long userId, HttpServletRequest request);
+
+    /*
+        积分充值
+     */
+    boolean czPoint(CzUpdateRequest czUpdateRequest, HttpServletRequest request);
 
 
     /**

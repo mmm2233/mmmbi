@@ -1,10 +1,7 @@
 import Footer from '@/components/Footer';
 import {
-  AlipayCircleOutlined,
   LockOutlined,
-  TaobaoCircleOutlined,
   UserOutlined,
-  WeiboCircleOutlined,
 } from '@ant-design/icons';
 import {
   LoginForm,
