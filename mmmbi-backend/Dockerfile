@@ -7,7 +7,7 @@ LABEL maintainer="mmm2233 <2350617910@qq.com>"
 #    echo "Asia/Shanghai" > /etc/timezone && \
 #    apk del tzdata
 # 创建工作目录
-RUN mkdir -p /app/hxBI
+RUN mkdir -p /app/mmmbi
 
 # 将所有jar文件添加到对应模块的目录中 => 需要注意的是 , TODO 构建的时候是以dockerfile所在的目录开始的
 COPY target/mmmbi.jar .

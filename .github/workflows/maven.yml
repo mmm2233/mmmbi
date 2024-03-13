@@ -24,7 +24,7 @@ jobs:
           ls -la
       # build jar
       - name: Build with Maven # build jar
-        run: mvn -B package -DskipTests --file pom.xml
+        run: mvn -B package -DskipTests --file mmmbi-backend/pom.xml
 
       # login to ACR
       - name: Login to Aliyun Container Registry (ACR)
