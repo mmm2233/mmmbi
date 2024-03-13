@@ -10,13 +10,13 @@ LABEL maintainer="mmm2233 <2350617910@qq.com>"
 RUN mkdir -p /app/mmmbi
 
 # 将所有jar文件添加到对应模块的目录中 => 需要注意的是 , TODO 构建的时候是以dockerfile所在的目录开始的
-COPY target/mmmbi-backend.jar .
+COPY target/mmmbi-backend-0.0.1-SNAPSHOT.jar .
 
 # 暴露端口号
 EXPOSE 8101
 
 # 运行所有jar文件
-CMD ["sh", "-c", "java -jar mmmbi-backend.jar --spring.profiles.active=prod"]
+CMD ["sh", "-c", "java -jar mmmbi-backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod"]
 
 ## Docker 镜像构建
 #FROM maven:3.8.1-jdk-8-slim as builder
