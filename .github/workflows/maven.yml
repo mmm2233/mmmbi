@@ -29,7 +29,9 @@ jobs:
         run: |
           cd ./mmmbi-backend
           ls -la
-	  cd ./target
+      - name: Show Directory and Files
+        run: |
+          cd ./mmmbi-backend/target
           ls -la
       # login to ACR
       - name: Login to Aliyun Container Registry (ACR)
