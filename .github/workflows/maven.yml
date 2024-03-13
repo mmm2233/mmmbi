@@ -24,7 +24,7 @@ jobs:
           ls -la
       # build jar
       - name: Build with Maven # build jar
-        run: mvn -B package -DskipTests --file mmmbi-backend/pom.xml
+        run: mvn -B package -DskipTests --file ./mmmbi-backend/pom.xml
 
       # login to ACR
       - name: Login to Aliyun Container Registry (ACR)
@@ -40,5 +40,5 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.sha }} # 用于标记容器版本号
         run: |
-          docker build -t registry.cn-wulanchabu.aliyuncs.com/hxbi/hxbi-backend:$IMAGE_TAG .
-          docker push registry.cn-wulanchabu.aliyuncs.com/hxbi/hxbi-backend:$IMAGE_TAG
+          docker build -t registry.cn-hangzhou.aliyuncs.com/mingbi/mmmbi:$IMAGE_TAG -f ./mmmbi-backend/Dockerfile  .
+          docker push registry.cn-hangzhou.aliyuncs.com/mingbi/mmmbi:$IMAGE_TAG
