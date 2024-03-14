@@ -13,7 +13,7 @@ spring:
   # todo 需替换配置
   redis:
     database: 1
-    host: myredis
+    host: 172.17.0.2
     port: 6379
     timeout: 5000
     password: 7f674e4240fe
@@ -26,13 +26,13 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      host: mongo
+      host: 172.17.0.3
       port: 27017
       database: bi
       username: mmm
       password: 7f674e4240fe
   rabbitmq:
-    host: rabbit
+    host: 172.17.0.4
     port: 5672
     password: guest
     username: 7f674e4240fe
