@@ -34,7 +34,7 @@ spring:
   rabbitmq:
     host: 172.17.0.4
     port: 5672
-    password: guest
+    password: mmm
     username: 7f674e4240fe
 mybatis-plus:
   configuration:
