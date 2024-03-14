@@ -1,9 +1,4 @@
 declare namespace API {
-  type addUsingGETParams = {
-    /** name */
-    name?: string;
-  };
-
   type AiResponse = {
     resultId?: number;
   };
