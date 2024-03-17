@@ -13,7 +13,7 @@ spring:
   # todo 需替换配置
   redis:
     database: 1
-    host: 172.17.0.2
+    host: 127.0.0.1
     port: 6379
     timeout: 5000
     password: 7f674e4240fe
@@ -26,16 +26,16 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      host: 172.17.0.3
+      host: 127.0.0.1
       port: 27017
       database: bi
-      username: mmm
-      password: 7f674e4240fe
+#      username: mmm
+#      password: 7f674e4240fe
   rabbitmq:
-    host: 172.17.0.4
+    host: 127.0.0.1
     port: 5672
-    password: 7f674e4240fe
-    username: mmm
+    password: d5107df1
+    username: admin
 mybatis-plus:
   configuration:
     # 生产环境关闭日志

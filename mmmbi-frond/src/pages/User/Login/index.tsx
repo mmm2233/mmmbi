@@ -56,8 +56,8 @@ const Login: React.FC = () => {
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
+        console.log(urlParams.get('redirect'))
         history.push(urlParams.get('redirect') || '/');
-        
         return;
       } else {
         message.error(res.message);

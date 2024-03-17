@@ -80,7 +80,9 @@ export const errorConfig: RequestConfig = {
         message.error('None response! Please retry.');
       } else {
         // 发送请求时出了点问题
-        message.error('Request error, please retry.');
+        message.error(error.info);
+        //console.log(error.info.errorMessage);
+        //message.error('请求出现问题，请重试');
       }
     },
   },

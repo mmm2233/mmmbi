@@ -1,5 +1,6 @@
 package com.mmm.springbootinit.service;
 
+import co.elastic.clients.elasticsearch.nodes.Http;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.mmm.springbootinit.model.dto.user.UserQueryRequest;
@@ -9,6 +10,8 @@ import com.mmm.springbootinit.model.vo.UserVO;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 
 /**
@@ -37,7 +40,7 @@ public interface UserService extends IService<User> {
      * @param request
      * @return 脱敏后的用户信息
      */
-    LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request);
+    LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request, HttpServletResponse response);
 
     /**
      * 获取当前登录用户

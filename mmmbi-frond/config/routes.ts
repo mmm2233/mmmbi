@@ -4,23 +4,22 @@ export default [
   routes: [
     {path: '/chart/add', name: '分析图表(同步)', component: './Chart/AddChart'},
     {path: '/chart/add_async', name: '分析图表(异步)', component: './Chart/AddChartAsync'},
-    {path: '/chart/add_mq', name: '分析图表(队列)', component: './Chart/AddChartMQ'},
     //{path: '/chart/info/:id',component: './Chart/MyChartInfo'},
   ]},
 
-  {path: '/text', name: '智能分析文本', icon: 'read',
-    hideChildrenInMenu: false,
-    routes: [
-      {path: '/text/add', name: '分析文本(队列)', component: './Text/AddTextMQ'},
-      {path: '/text/info/:id',component: './Text/MyTextInfo'},
-    ]},
+  // {path: '/text', name: '智能分析文本', icon: 'read',
+  //   hideChildrenInMenu: false,
+  //   routes: [
+  //     {path: '/text/add', name: '分析文本(队列)', component: './Text/AddTextMQ'},
+  //     {path: '/text/info/:id',component: './Text/MyTextInfo'},
+  //   ]},
 
-  {path: '/my_result', name: '智能分析结果', icon: 'barChart',
-  hideChildrenInMenu: false,
-  routes: [
-    {path: '/my_result/my_chart',name: '我的图表', component: './My/MyChart'},
-    {path: '/my_result/my_md',name: '我的文本', component: './My/MyText'},
-  ]},
+  // {path: '/my_result', name: '智能分析结果', icon: 'barChart',
+  // hideChildrenInMenu: false,
+  // routes: [
+  //   {path: '/my_result/my_chart',name: '我的图表', component: './My/MyChart'},
+  //   {path: '/my_result/my_md',name: '我的文本', component: './My/MyText'},
+  // ]},
 
   {path: '/analysis', name: '智能分析结果', icon: 'barChart',
   hideChildrenInMenu: false,
@@ -29,7 +28,7 @@ export default [
     {path: '/analysis/text',name: '我的文本', component: './Analysis/TextAnalysis'},
   ]},
 
-  {path: '/user/edit',name: '我的信息', icon: 'user',component: './User/UserEdit'},
+  //{path: '/user/edit',name: '我的信息', icon: 'user',component: './User/UserEdit'},
   {
     path: '/user',
     layout: false,
@@ -46,7 +45,7 @@ export default [
     routes: [
     ],
   },
-  {path: '/', redirect: '/user/edit'},
+  {path: '/',redirect:'/user/login'},
   {path: '*', layout: false, component: './404'},
 
 ];
