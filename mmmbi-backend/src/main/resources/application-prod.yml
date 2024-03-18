@@ -25,12 +25,12 @@ spring:
     password: 123456
   data:
     mongodb:
-#      authentication-database: admin
+      authentication-database: admin
       host: 127.0.0.1
       port: 27017
       database: bi
-#      username: mmm
-#      password: 7f674e4240fe
+      username: mmm
+      password: a7350387
   rabbitmq:
     host: 127.0.0.1
     port: 5672
