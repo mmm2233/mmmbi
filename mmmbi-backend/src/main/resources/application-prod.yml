@@ -16,7 +16,7 @@ spring:
     host: 127.0.0.1
     port: 6379
     timeout: 5000
-    password: 7f674e4240fe
+#    password: 7f674e4240fe
   # Elasticsearch 配置
   # todo 需替换配置
   elasticsearch:
