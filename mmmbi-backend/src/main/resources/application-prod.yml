@@ -26,11 +26,11 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      host: localhost
+      host: 127.0.0.1
       port: 27017
       database: bi
-      username: mmm
-      password: a7350387
+#      username: mmm
+#      password: a7350387
   rabbitmq:
     host: localhost
     port: 5672
