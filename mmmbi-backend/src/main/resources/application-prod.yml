@@ -34,8 +34,8 @@ spring:
   rabbitmq:
     host: 127.0.0.1
     port: 5672
-    password: d5107df1
-    username: admin
+    password: 7f674e4240fe
+    username: guest
 mybatis-plus:
   configuration:
     # 生产环境关闭日志
