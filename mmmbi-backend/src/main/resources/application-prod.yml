@@ -6,14 +6,14 @@ spring:
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://1.94.66.209:3306/my_db
+    url: jdbc:mysql://127.0.0.1:3306/my_db
     username: mmm
     password: 7f674e4240fe
   # Redis 配置
   # todo 需替换配置
   redis:
     database: 1
-    host: 1.94.66.209
+    host: 127.0.0.1
     port: 6379
     timeout: 5000
     password: 7f674e4240fe
@@ -26,13 +26,13 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      host: 1.94.66.209
+      host: 127.0.0.1
       port: 27017
       database: bi
 #      username: mmm
 #      password: a7350387
   rabbitmq:
-    host: 1.94.66.209
+    host: 127.0.0.1
     port: 5672
     password: d5107df1
     username: admin
