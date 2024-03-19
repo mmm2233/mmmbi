@@ -65,8 +65,8 @@ server:
     session:
       cookie:
         max-age: 2592000
-        secure: true
-        same-site: none
+#        secure: true
+#        same-site: none
 yuapi:
   client:
     access-key: tdbzdtvtzjhijwcjayu89oon5sqdynwi
