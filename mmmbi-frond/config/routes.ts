@@ -1,34 +1,19 @@
 export default [
-  {path: '/chart', name: '智能分析图表', icon: 'pieChart',
+
+  {path: '/chart', name: '智能分析', icon: 'pieChart',
   hideChildrenInMenu: false,
   routes: [
     {path: '/chart/add', name: '分析图表(同步)', component: './Chart/AddChart'},
     {path: '/chart/add_async', name: '分析图表(异步)', component: './Chart/AddChartAsync'},
-    //{path: '/chart/info/:id',component: './Chart/MyChartInfo'},
   ]},
 
-  // {path: '/text', name: '智能分析文本', icon: 'read',
-  //   hideChildrenInMenu: false,
-  //   routes: [
-  //     {path: '/text/add', name: '分析文本(队列)', component: './Text/AddTextMQ'},
-  //     {path: '/text/info/:id',component: './Text/MyTextInfo'},
-  //   ]},
-
-  // {path: '/my_result', name: '智能分析结果', icon: 'barChart',
-  // hideChildrenInMenu: false,
-  // routes: [
-  //   {path: '/my_result/my_chart',name: '我的图表', component: './My/MyChart'},
-  //   {path: '/my_result/my_md',name: '我的文本', component: './My/MyText'},
-  // ]},
-
-  {path: '/analysis', name: '智能分析结果', icon: 'barChart',
+  {path: '/analysis', name: '分析结果', icon: 'barChart',
   hideChildrenInMenu: false,
   routes: [
-    {path: '/analysis/image',name: '我的图表', component: './Analysis/AddImage'},
-    {path: '/analysis/text',name: '我的文本', component: './Analysis/TextAnalysis'},
+    {path: '/analysis/my_chart',name: '我的图表', component: './My/MyChart'},
   ]},
 
-  //{path: '/user/edit',name: '我的信息', icon: 'user',component: './User/UserEdit'},
+  {path: '/user/edit',name: '我的信息', icon: 'user',component: './User/UserEdit'},
   {
     path: '/user',
     layout: false,
@@ -37,15 +22,15 @@ export default [
       {name: '注册', path: '/user/register', component: './User/Register'},
     ],
   },
-  {
-    path: '/admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    name: '管理人员页面',
-    routes: [
-    ],
-  },
-  {path: '/',redirect:'/user/login'},
+  // {
+  //   path: '/admin',
+  //   icon: 'crown',
+  //   access: 'canAdmin',
+  //   name: '管理人员页面',
+  //   routes: [
+  //   ],
+  // },
+  {path: '/',redirect:'/analysis/my_chart'},
   {path: '*', layout: false, component: './404'},
 
 ];

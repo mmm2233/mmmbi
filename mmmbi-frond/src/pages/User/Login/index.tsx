@@ -1,27 +1,18 @@
 import Footer from '@/components/Footer';
-import {
-  LockOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import {
-  LoginForm,
-  ProFormText,
-} from '@ant-design/pro-components';
-import {useEmotionCss} from '@ant-design/use-emotion-css';
-
-import {Helmet, history, useModel} from '@umijs/max';
-import {message, Tabs} from 'antd';
-import React, {useState} from 'react';
-import {flushSync} from 'react-dom';
+import { getLoginUserUsingGet, userLoginUsingPost } from '@/services/mmmbi/userController';
+import { Link } from '@@/exports';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { LoginForm, ProFormText } from '@ant-design/pro-components';
+import { useEmotionCss } from '@ant-design/use-emotion-css';
+import { Helmet, history, useModel } from '@umijs/max';
+import { message, Tabs } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import Settings from '../../../../config/defaultSettings';
-import {getLoginUserUsingGet, userLoginUsingPost} from "@/services/mmmbi/userController";
-import {Link} from "@umijs/renderer-react";
-
 
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginUserVO>({});
   const [type, setType] = useState<string>('account');
-  const {initialState, setInitialState} = useModel('@@initialState');
+  const { initialState, setInitialState } = useModel('@@initialState');
   const containerClassName = useEmotionCss(() => {
     return {
       display: 'flex',
@@ -33,8 +24,9 @@ const Login: React.FC = () => {
       backgroundSize: '100% 100%',
     };
   });
+
   /**
-   * 获取登录信息
+   * 登陆成功后，获取用户登录信息
    */
   const fetchUserInfo = async () => {
     const userInfo = await getLoginUserUsingGet();
@@ -42,11 +34,12 @@ const Login: React.FC = () => {
       flushSync(() => {
         setInitialState((s) => ({
           ...s,
-          currentUser: userInfo.data,
+          currentUser: userInfo as API.LoginUserVO,
         }));
       });
     }
   };
+
   const handleSubmit = async (values: API.UserLoginRequest) => {
     try {
       // 登录
@@ -56,7 +49,6 @@ const Login: React.FC = () => {
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
-        console.log(urlParams.get('redirect'))
         history.push(urlParams.get('redirect') || '/');
         return;
       } else {
@@ -86,12 +78,8 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg"/>}
-          title="智能 BI"
-          subTitle={'智能 BI 是吉世界开发的全栈项目'}
-          initialValues={{
-            autoLogin: true,
-          }}
+          logo={<img alt="logo" src="/logo.svg" />}
+          title=" Ming 智能BI"
           onFinish={async (values) => {
             await handleSubmit(values as API.UserLoginRequest);
           }}
@@ -113,13 +101,13 @@ const Login: React.FC = () => {
                 name="userAccount"
                 fieldProps={{
                   size: 'large',
-                  prefix: <UserOutlined/>,
+                  prefix: <UserOutlined />,
                 }}
-                placeholder={'请输入账号'}
+                placeholder={'请输入用户名'}
                 rules={[
                   {
                     required: true,
-                    message: '账号是必填项！',
+                    message: '用户名是必填项！',
                   },
                 ]}
               />
@@ -127,7 +115,7 @@ const Login: React.FC = () => {
                 name="userPassword"
                 fieldProps={{
                   size: 'large',
-                  prefix: <LockOutlined/>,
+                  prefix: <LockOutlined />,
                 }}
                 placeholder={'请输入密码'}
                 rules={[
@@ -144,16 +132,12 @@ const Login: React.FC = () => {
               marginBottom: 24,
             }}
           >
-            <a
-            >
-              <Link to={'/user/register'}>新用户注册</Link>
-            </a>
+            <Link to="/user/register">注册</Link>
           </div>
         </LoginForm>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };
 export default Login;
-

@@ -1,9 +1,9 @@
-import {genChartByAiUsingPost} from '@/services/mmmbi/chartController';
+import { genChartByAiUsingPost } from '@/services/mmmbi/chartController';
 import { UploadOutlined } from '@ant-design/icons';
-import {Button, Card, Form, Input, message, Select, Space, Upload} from 'antd';
+import { Button, Card, Form, Input, message, Select, Space, Upload } from 'antd';
+import { useForm } from 'antd/es/form/Form';
 import TextArea from 'antd/es/input/TextArea';
 import React, { useState } from 'react';
-import {useForm} from "antd/es/form/Form";
 
 /**
  * 添加图表（异步）页面
@@ -30,6 +30,7 @@ const AddChartAsync: React.FC = () => {
     };
     try {
       const res = await genChartByAiUsingPost(params, {}, values.file.file.originFileObj);
+      // const res = await genChartByAiAsyncMqUsingPOST(params, {}, values.file.file.originFileObj);
       if (!res?.data) {
         message.error('分析失败');
       } else {
@@ -45,8 +46,15 @@ const AddChartAsync: React.FC = () => {
   return (
     <div className="add-chart-async">
       <Card title="智能分析">
-        <Form form={form} name="addChart" labelAlign="left" labelCol={{ span: 4 }}
-              wrapperCol={{ span: 16 }} onFinish={onFinish} initialValues={{}}>
+        <Form
+          form={form}
+          name="addChart"
+          labelAlign="left"
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 16 }}
+          onFinish={onFinish}
+          initialValues={{}}
+        >
           <Form.Item
             name="goal"
             label="分析目标"

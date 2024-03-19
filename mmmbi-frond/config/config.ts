@@ -130,7 +130,8 @@ export default defineConfig({
     {
       requestLibPath: "import { request } from '@umijs/max'",
       // 或者使用在线的版本
-      schemaPath: "http://root:123456@8.136.121.5:8101/api/v2/api-docs",
+      //schemaPath: "http://localhost:8101/api/v2/api-docs",
+      schemaPath: "http://root:123456@127.0.0.1:8101/api/v2/api-docs",
       projectName: "mmmbi",
     },
   ],

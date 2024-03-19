@@ -1,6 +1,6 @@
 import { AvatarDropdown, AvatarName, Footer, Question } from '@/components';
 import { LinkOutlined } from '@ant-design/icons';
-import { SettingDrawer } from '@ant-design/pro-components';
+import { SettingDrawer, Settings } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { Link, history } from '@umijs/max';
 import { errorConfig } from './requestConfig';
@@ -13,6 +13,7 @@ const loginPath = '/user/login';
  * */
 export async function getInitialState(): Promise<{
   currentUser?: API.LoginUserVO;
+  settings?: Partial<Settings>;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -120,7 +121,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request = {
-  baseURL : 'http://8.136.121.5:8101/',
+  baseURL : 'http://127.0.0.1:8101',
   withCredentials: true,
   ...errorConfig,
 };

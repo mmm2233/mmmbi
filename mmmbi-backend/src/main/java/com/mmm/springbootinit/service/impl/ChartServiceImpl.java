@@ -201,6 +201,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
             return updateDocument(chart);
         } else {
             chart.setVersion(1);
+            chart.setCreateTime(new Date());
             ChartGen save = chartRepository.save(chart);
             return true;
         }
