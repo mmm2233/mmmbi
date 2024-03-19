@@ -84,8 +84,8 @@ const Register: React.FC = () => {
             maxWidth: '75vw',
           }}
           logo={<img alt="logo" src="/logo.svg" />}
-          title="智能 BI平台"
-          subTitle={'智能 BI 是吉世界开发的全栈项目'}
+          title="智能BI平台"
+          //subTitle={'智能 BI平台'}
           initialValues={{
             autoLogin: true,
           }}

@@ -126,15 +126,15 @@ export default defineConfig({
    * @description 基于 openapi 的规范生成serve 和mock，能减少很多样板代码
    * @doc https://pro.ant.design/zh-cn/docs/openapi/
    */
-  openAPI: [
-    {
-      requestLibPath: "import { request } from '@umijs/max'",
-      // 或者使用在线的版本
-      //schemaPath: "http://localhost:8101/api/v2/api-docs",
-      schemaPath: "http://root:123456@127.0.0.1:8101/api/v2/api-docs",
-      projectName: "mmmbi",
-    },
-  ],
+  // openAPI: [
+  //   {
+  //     requestLibPath: "import { request } from '@umijs/max'",
+  //     // 或者使用在线的版本
+  //     //schemaPath: "http://127.0.0.1:8101/api/v2/api-docs",
+  //     schemaPath: "http://root:123456@mmmbi/api/v2/api-docs",
+  //     projectName: "mmmbi",
+  //   },
+  // ],
   mfsu: {
     strategy: 'normal',
   },
