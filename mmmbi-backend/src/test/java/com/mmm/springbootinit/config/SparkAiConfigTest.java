@@ -31,7 +31,6 @@ class SparkAiConfigTest {
 
     @Test
     public void sparkTest() {
-
         // 消息列表，可以在此列表添加历史对话记录
         List<SparkMessage> messages=new ArrayList<>();
         messages.add(SparkMessage.systemContent("请你扮演我的语文老师李老师，问我讲解问题问题，希望你可以保证知识准确，逻辑严谨。"));

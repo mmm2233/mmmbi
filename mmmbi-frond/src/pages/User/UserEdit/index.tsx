@@ -46,6 +46,7 @@ const UserEdit: React.FC = () => {
    */
   const creditTotal = async () => {
     try {
+      console.log("userInfoParams", userInfoParams.id)
       const res = await getUserPointUsingGet({
         userId :userInfoParams.id,
       });
@@ -119,7 +120,7 @@ const UserEdit: React.FC = () => {
    * 充值金额
    * @param value
    */
-  const onChange = (value: number) => {
+  const onChange = (value: number | null) => {
     if (value === null){
       message.error('请输入正确金额');
       return
